@@ -21,7 +21,7 @@ Optionally scale in if the divergence widens the next day.
 Close position when SPY recovers by > +2% OR
 VIX drops back by > –15% from recent spike
 
-5.Risk Management:
+5. Risk Management:
 5% stop-loss from entry
 Max holding period: 5 trading days
 Trade size capped at 5% of capital
