@@ -19,7 +19,8 @@ Enter short SPY at close on divergence signal.
 Optionally scale in if the divergence widens the next day.
 
 4. Exit Logic:
-Close position when SPY dips by > 1% from entry OR
+Close position when SPY dips by > 1% from entry  
+OR
 VIX declines by at least 1%, showing a negative daily return.
 
 5. Risk Management:
