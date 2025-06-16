@@ -5,21 +5,25 @@ This is not a new phenomenon. During the COVID crash, for instance, VIX soared a
 
 Strategy Rules
 1. Assets Traded: 
-SPY (long-only)
+SPY (short-only)
 VIX is used as a signal but not traded directly.
 
-2. Signal Construction: 
-Calculate % change in VIX over a short window (e.g., 2–3 days).
-Calculate % change in SPY over the same window.
-If VIX rises sharply (> +20%) while SPY is flat or down moderately (< –1%), this is considered a fear spike divergence.
+2. Signal Construction:
+Calculate the daily percentage change in VIX.
+Calculate the daily percentage change in SPY over the same day.
+If VIX rises by 5% or more on a given day, and SPY declines by 1% or less (including small gains), this signals a potential fear spike divergence.
 
 3. Entry Logic:
-Enter long SPY at close on divergence signal.
+Enter short SPY at close on divergence signal.
 Optionally scale in if the divergence widens the next day.
 
 4. Exit Logic:
-Close position when SPY recovers by > +2% OR
-VIX drops back by > –15% from recent spike
+Close position when SPY dips by > +1%
+OR
+
+
+*VIX declines by at least 1% showing a negative daily return.*
+
 
 5. Risk Management:
 5% stop-loss from entry
