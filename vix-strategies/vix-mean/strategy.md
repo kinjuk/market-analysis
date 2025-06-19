@@ -37,8 +37,6 @@ Enter short or long VIX futures at close on the day of the signal, depending on 
 
  - Max holding period: 60 trading days
 
- - Stop-loss size capped at 5% of capital
-
   (Optional cooldown period after any stop-out: 5 trading days)  
   
 7. Edge Hypothesis:  
