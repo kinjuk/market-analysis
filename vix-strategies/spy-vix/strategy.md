@@ -12,26 +12,26 @@ VIX is used as a signal but not traded directly.
 2. Signal Construction:  
 Calculate the daily percentage change in VIX.  
 Calculate the daily percentage change in SPY over the same day.  
-If VIX rises by 5% or more on a given day, and SPY declines by 1% or less (including small gains), this signals a potential fear spike divergence.  
+If VIX rises by 20% or more on a given day, and SPY declines by 2.5% or more, this signals a potential fear spike divergence.  
   
 3. Entry Logic:  
 Enter short SPY at close on divergence signal.  
-Optionally scale in if the divergence widens the next day.  
+Optionally scale in if the divergence widens the next day.
+If SPY drops by 5% or more on any single day, initiate an immediate short regardless of VIX behavior.  
   
 4. Exit Logic:  
-Close position when SPY dips by > 1% from entry  
+Close position when SPY dips by > 2% from entry  
 OR  
-VIX declines by at least 1%, showing a negative daily return.  
+VIX declines by at least 5%, showing a negative daily return.  
   
 5. Risk Management:  
-5% stop-loss from entry  
-Max holding period: 5 trading days  
-Trade size capped at 5% of capital  
+2% stop-loss from entry  
+Max holding period: 13 trading days   
 No re-entry within 10 days of a stopped-out trade to reduce signal noise in choppy markets.  
   
-7. Edge Hypothesis:  
+6. Edge Hypothesis:  
 The market tends to overreact to uncertainty faster than actual price deterioration occurs. SPY often rebounds once fear overshoots.  
   
-8. Backtest Notes:  
+7. Backtest Notes:  
 Strategy performs best in sideways to declining volatility regimes, and may underperform during strong trends or prolonged risk-off events.  
 More accurate on indices like SPY (where VIX is directly derived), and less so for other ETFs unless paired with appropriate volatility metrics.  
