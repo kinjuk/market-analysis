@@ -1,20 +1,23 @@
-A VIX Regression Mean-Deviation Strategy
+# From Overperforming to Underperforming the S&P 500
 
-The VIX doesn’t just reflect fear, it exaggerates it. While price action unfolds gradually, volatility often reacts in dramatic bursts. This creates the conditions for statistical mean reversion. Rather than chasing VIX spikes, this strategy frames them as deviations from a regression line which represents or aims to represent fair value.
-The goal is not to forecast direction but to respond to abnormal volatility shocks with a market stability thesis. When VIX moves in a way that exceeds a regression-based expectation, it often represents an overreaction rather than a new trend. This strategy aims to exploit those overreactions by trading VIX futures both long and short when price strays too far from its mean.
+One key observation was that until early 2020, the VIX mean-reversion strategy outperformed SPY. Coinciding with the COVID-19 crisis and the following recession in 2021 and 2022.  
+While COVID-19 possibily triggered the initial divergence, the continued underperformance suggests a lasting shift in volatility behavior, possibly due to:
 
-1. Assets Traded:  
-VIX Futures (long / short positions allowed) 
-  
-2. Signal Construction:  
- - Fit a linear regression line to the trailing 120 days of VIX values
+- More accentuated market trending directions  
+- Ongoing macro shocks  
+- Repeated Fed interventions  
+- Structural changes in the VIX derivatives market (such as: increased options hedging demand, volume targeting funds)
 
- - Predict today’s expected VIX value based on that regression
+---
 
- - Measure percent deviation of actual VIX from predicted value:
+## Questioning and looking for alternatives like:
 
-      (VIX_actual - VIX_predicted) / VIX_predicted * 100
+- Did the strategy not adapt to overall market dinamics changes?  
+- Is adding a volatility regime classifier a possible fix (e.g., if VIX > 30 , then avoid trading)?  
+- Are there new "mean levels" of volatility post-2020?  
+- Should the regression model be recalibrated to only use post-2020 data?  
+- Would dynamically adjusting the regression window improve adaptability?
 
- - Short Signal: If VIX exceeds the predicted value by more than +10%
+---
 
- - Long Signal: If VIX falls more than -10% below the predicted value
+Keeping in mind that overfitting to 2020–2024 might not guarantee a strategy that generalizes well over time. Still, it's important to acknowledge that the assumptions behind VIX mean-reversion may no longer hold without refinement.
