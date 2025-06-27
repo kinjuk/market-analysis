@@ -38,4 +38,6 @@ This strategy aims to **capture sustained moves** in SPY by entering positions a
 - Performs best in trending markets where momentum persists.  
 - Can suffer during sideways or choppy price action, causing whipsaws on frequent crossovers.  
 - Risk management via stop-loss is critical to avoid large losses during false signals or trend failures.  
-- Performance can be improve
+- Performance can be improved by combining with filters, such as volatility regimes or volume confirmation.  
+- **Comparison Benchmark:** Buy & Hold SPY to evaluate whether trend-following adds value over passive exposure.
+- **Comparison Benchmark 2:** Hybrid MACD Longs + Buy & Hold SPY to see if it can improve and outperform the market.
