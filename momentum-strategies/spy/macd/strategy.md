@@ -41,3 +41,5 @@ This strategy aims to **capture sustained moves** in SPY by entering positions a
 - Performance can be improved by combining with filters, such as volatility regimes or volume confirmation.  
 - **Comparison Benchmark:** Buy & Hold SPY to evaluate whether trend-following adds value over passive exposure.
 - **Comparison Benchmark 2:** Hybrid MACD Longs + Buy & Hold SPY to see if it can improve and outperform the market.
+- This backtest assumes, no slippage, no spread, no borrowing costs, and ideal execution. Realized performance would likely be lower.
+- 5-year period instead of long term (20-year+ period) to make the plotting more perceptible and easier to interpret.
