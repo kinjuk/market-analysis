@@ -19,11 +19,11 @@ It uses a daily timeframe with RSI as the single indicator seeking to exploit pr
 - If RSI is between 30 and 70 → No trade. Stay out of the market.
 
 ### Exit Logic
-- Exit any open trade once RSI comes back to 50 (the midpoint).  
-  This reflects a return to neutral conditions, signaling the end of the short-term overbought/oversold condition.
+- Exit any open trade once RSI comes back to 60 (50 midpoint + 10 to compensate for the upward bias in the market).  
+  This reflects a return to "pseudo-neutral" conditions, signaling the end of the short-term overbought/oversold condition.
 
 ### Risk Management
-- A 5% stop-loss from entry is also enforced to guard against extreme moves (breakouts).  
+- A 15% stop-loss from entry is also enforced to guard against extreme moves (breakouts).  
 - In cash when while RSI between 30 and 70.  
 - One position at a time (no overlapping long and short trades).
 
@@ -38,5 +38,5 @@ The idea is to **fade strength or weakness** at points where continuation is sta
 - It may underperform in strong directional markets where RSI stays overbought or oversold for extended periods.  
 - The strategy avoids whipsaw in neutral conditions by requiring clear signals (RSI > 70 or < 30).  
 - Performance can be improved by combining this model with filters (macro trend filters or volatility regime classifiers).  
-- **Comparison Benchmark:** An alternative comparison model uses a **SPY Buy & Hold core allocation** with **temporary short overlays** based on RSI > 70.  
-  This hybrid seeks to reduce exposure during overbought conditions without exiting the market completely. It offers a middle ground between passive investing and active mean-reversion. This strategy is **not** the one implemented, but it serves as a useful benchmark for assessing edge.
+- **Comparison Benchmark:** An alternative comparison model uses a **SPY Buy & Hold core allocation** with **temporary leverage overlays** based on *RSI < 30*.  
+  This hybrid seeks to increase exposure during oversold conditions without exiting the market completely. It offers a middle ground between passive investing and active mean-reversion. This strategy **is implemented in the code** as a reference point to compare performance, risk, and responsiveness to momentum extremes.
