@@ -38,7 +38,7 @@ VIX frequently overshoots or undershoots its trend due to market reflexes and pa
 
 ## Backtest Notes
 
-- This strategy trades VIX Futures or CFDs, but for plotting and analysis, the VIX index is used because it consolidates all available data into a single instrument. The specific intricacies of trading Futures or CFDs, such as roll costs or spread issues, are not addressed in this strategy.
+- Trades VIX Futures or CFDs, but for plotting and analysis, the VIX index is used because it consolidates all available data into a single instrument. The specific intricacies of trading Futures or CFDs, such as roll costs or spread issues, are not addressed here
 - Strategy is sensitive to regression window — shorter windows may be more reactive but noisier  
 - Most effective in choppy or sideways markets  
 - May underperform in trending markets where fear or complacency is justified and prolonged  
