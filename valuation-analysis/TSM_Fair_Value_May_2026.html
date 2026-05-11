@@ -1,0 +1,871 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TSM — Fair Value Analysis · May 2026</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400;1,600&family=Spectral:ital,wght@0,300;0,400;1,300&family=JetBrains+Mono:wght@300;400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --brand:       #c0394b;
+    --brand-deep:  #8a1f30;
+    --under-color: #6dc987;
+  }
+
+  [data-theme="light"] {
+    --bg:          #f7f4ef;
+    --bg-card:     #ffffff;
+    --bg-raised:   #f0ece4;
+    --ink:         #111010;
+    --ink-2:       #4a4540;
+    --ink-3:       #9a948e;
+    --rule:        #ddd8d0;
+    --badge-under-bg:  #d6eedc;
+    --badge-under-ink: #1a5c38;
+    --badge-over-bg:   #fde0e0;
+    --badge-over-ink:  #8b1a1a;
+    --final-bg:    #111010;
+    --final-ink:   #f7f4ef;
+    --final-rule:  #2a2828;
+    --final-sub:   #666;
+    --mb-empty:    #2a2828;
+    --verdict-bg:  #111010;
+    --verdict-ink: #f7f4ef;
+    --growth-up:   #1a5c38;
+    --growth-down: #8b1a1a;
+  }
+
+  [data-theme="dark"] {
+    --bg:          #0e0d0d;
+    --bg-card:     #161414;
+    --bg-raised:   #1c1a1a;
+    --ink:         #ede9e3;
+    --ink-2:       #a09890;
+    --ink-3:       #5c5652;
+    --rule:        #2a2626;
+    --badge-under-bg:  rgba(109,201,135,0.14);
+    --badge-under-ink: #6dc987;
+    --badge-over-bg:   rgba(204,32,39,0.15);
+    --badge-over-ink:  #f07070;
+    --final-bg:    #0a0909;
+    --final-ink:   #ede9e3;
+    --final-rule:  #2a2626;
+    --final-sub:   #5c5652;
+    --mb-empty:    #2a2626;
+    --verdict-bg:  #0a0909;
+    --verdict-ink: #ede9e3;
+    --growth-up:   #6dc987;
+    --growth-down: #f07070;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'Spectral', Georgia, serif;
+    font-weight: 300;
+    line-height: 1.65;
+    min-height: 100vh;
+    transition: background 0.3s, color 0.3s;
+  }
+
+  /* TOGGLE */
+  .theme-toggle {
+    position: fixed;
+    top: 1.3rem;
+    right: 1.6rem;
+    z-index: 200;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+    background: var(--bg-card);
+    border: 1px solid var(--rule);
+    border-radius: 40px;
+    padding: 0.32rem 0.7rem 0.32rem 0.5rem;
+    transition: background 0.3s, border-color 0.3s;
+  }
+  .toggle-track {
+    width: 30px; height: 16px;
+    background: var(--rule);
+    border-radius: 999px;
+    position: relative;
+    transition: background 0.3s;
+    flex-shrink: 0;
+  }
+  [data-theme="dark"] .toggle-track { background: var(--brand); }
+  .toggle-thumb {
+    width: 10px; height: 10px;
+    background: #fff;
+    border-radius: 50%;
+    position: absolute;
+    top: 3px; left: 3px;
+    transition: transform 0.28s cubic-bezier(.4,0,.2,1);
+  }
+  [data-theme="dark"] .toggle-thumb { transform: translateX(14px); }
+  .toggle-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.56rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-2);
+    user-select: none;
+    transition: color 0.3s;
+  }
+
+  /* MASTHEAD */
+  .masthead {
+    border-bottom: 1px solid var(--rule);
+    padding: 2.2rem 4rem 2rem;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: end;
+    gap: 2rem;
+    animation: fadeDown 0.5s ease both;
+    transition: border-color 0.3s;
+  }
+  .eyebrow {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--brand);
+    margin-bottom: 0.55rem;
+  }
+  .ticker-row { display: flex; align-items: baseline; gap: 1.4rem; }
+  .ticker {
+    font-family: 'Playfair Display', serif;
+    font-weight: 600;
+    font-size: 4.6rem;
+    line-height: 1;
+    letter-spacing: -0.03em;
+    color: var(--ink);
+  }
+  .ticker em { color: var(--brand); font-style: normal; }
+  .company-name {
+    font-family: 'Spectral', serif;
+    font-size: 1rem;
+    font-style: italic;
+    font-weight: 300;
+    color: var(--ink-2);
+    padding-bottom: 0.5rem;
+    transition: color 0.3s;
+  }
+  .masthead-right { text-align: right; }
+  .date-tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+    margin-bottom: 0.4rem;
+    transition: color 0.3s;
+  }
+  .price-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.56rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+    display: block;
+    transition: color 0.3s;
+  }
+  .price-number {
+    font-family: 'Playfair Display', serif;
+    font-size: 2.5rem;
+    font-weight: 600;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+  }
+
+  /* VERDICT */
+  .verdict-banner {
+    background: var(--verdict-bg);
+    color: var(--verdict-ink);
+    padding: 1.25rem 4rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 2rem;
+    border-bottom: 2px solid var(--brand);
+    animation: fadeDown 0.5s 0.08s ease both;
+    transition: background 0.3s;
+  }
+  .verdict-text {
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+    font-size: 1.2rem;
+    color: var(--under-color);
+  }
+  .verdict-text.overvalued { color: #f07070; }
+  .verdict-meta { display: flex; gap: 2.5rem; }
+  .vm-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.53rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: #666;
+    display: block;
+    margin-bottom: 0.2rem;
+  }
+  .vm-val {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.05rem;
+    font-style: italic;
+    color: var(--verdict-ink);
+  }
+
+  /* CONTENT */
+  .content {
+    max-width: 1060px;
+    margin: 0 auto;
+    padding: 3rem 4rem 7rem;
+  }
+
+  /* SECTION HEADS */
+  .section-head {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin: 3.5rem 0 1.8rem;
+  }
+  .section-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.57rem;
+    color: var(--brand);
+    letter-spacing: 0.1em;
+    border: 1px solid var(--brand);
+    padding: 0.15rem 0.42rem;
+    border-radius: 2px;
+    flex-shrink: 0;
+  }
+  .section-title {
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+    font-size: 1.45rem;
+    color: var(--ink);
+    white-space: nowrap;
+  }
+  .section-rule { flex: 1; height: 1px; background: var(--rule); transition: background 0.3s; }
+
+  /* MODEL CARDS */
+  .model-card {
+    background: var(--bg-card);
+    border: 1px solid var(--rule);
+    border-top: 2px solid var(--brand);
+    padding: 2rem 2.4rem;
+    margin-bottom: 1.4rem;
+    transition: background 0.3s, border-color 0.3s;
+    animation: fadeUp 0.48s ease both;
+  }
+  .model-card:nth-child(1){animation-delay:0.1s}
+  .model-card:nth-child(2){animation-delay:0.16s}
+  .model-card:nth-child(3){animation-delay:0.22s}
+  .model-card:nth-child(4){animation-delay:0.28s}
+  .model-card:nth-child(5){animation-delay:0.34s}
+
+  .model-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1.2rem;
+    border-bottom: 1px solid var(--rule);
+    transition: border-color 0.3s;
+  }
+  .model-eyebrow {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.56rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+    margin-bottom: 0.3rem;
+    transition: color 0.3s;
+  }
+  .model-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.1rem;
+    color: var(--ink);
+  }
+  .model-output { text-align: right; }
+  .model-price-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.53rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+    display: block;
+    margin-bottom: 0.22rem;
+    transition: color 0.3s;
+  }
+  .model-price {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.8rem;
+    font-weight: 600;
+    line-height: 1;
+    margin-bottom: 0.38rem;
+  }
+
+  /* BADGES */
+  .badge {
+    display: inline-block;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.53rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 0.18rem 0.5rem;
+    border-radius: 2px;
+  }
+  .badge.under { background: var(--badge-under-bg); color: var(--badge-under-ink); }
+  .badge.over  { background: var(--badge-over-bg);  color: var(--badge-over-ink); }
+
+  /* DATA GRID */
+  .data-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(155px, 1fr));
+    gap: 1.1rem 2rem;
+  }
+  .di-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.55rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+    display: block;
+    margin-bottom: 0.22rem;
+    transition: color 0.3s;
+  }
+  .di-val {
+    font-family: 'Spectral', serif;
+    font-size: 0.95rem;
+    color: var(--ink);
+    transition: color 0.3s;
+  }
+
+  /* TABLES */
+  .div-table, .peer-table, .fcf-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: 'JetBrains Mono', monospace;
+  }
+  .div-table th, .peer-table th, .fcf-table th {
+    text-align: left;
+    font-size: 0.55rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+    border-bottom: 1px solid var(--rule);
+    padding: 0.38rem 0.8rem 0.38rem 0;
+    font-weight: 400;
+    transition: color 0.3s, border-color 0.3s;
+  }
+  .div-table td, .peer-table td, .fcf-table td {
+    padding: 0.36rem 0.8rem 0.36rem 0;
+    border-bottom: 1px solid var(--rule);
+    color: var(--ink);
+    font-size: 0.76rem;
+    transition: color 0.3s, border-color 0.3s;
+  }
+  .div-table tr:last-child td,
+  .peer-table tr:last-child td,
+  .fcf-table tr:last-child td { border-bottom: none; }
+
+  .growth-up   { color: var(--growth-up); }
+  .growth-down { color: var(--growth-down); }
+
+  .fcf-scroll { overflow-x: auto; margin-top: 1rem; }
+  .fcf-table  { min-width: 660px; }
+  .fcf-table th:not(:first-child),
+  .fcf-table td:not(:first-child) { text-align: right; }
+  .fcf-table td:first-child { color: var(--ink-2); }
+
+  /* FINAL CARD */
+  .final-card {
+    background: var(--final-bg);
+    padding: 2.5rem 2.8rem;
+    margin-top: 1.5rem;
+    border-top: 2px solid var(--brand);
+    transition: background 0.3s;
+  }
+  .fc-title {
+    font-family: 'Spectral', serif;
+    font-style: italic;
+    font-size: 0.83rem;
+    color: var(--final-sub);
+    margin-bottom: 1.8rem;
+  }
+  .models-breakdown {
+    display: grid;
+    grid-template-columns: repeat(5,1fr);
+    border: 1px solid var(--final-rule);
+    margin-bottom: 2.3rem;
+  }
+  .mb-item {
+    padding: 1.2rem 1rem;
+    border-right: 1px solid var(--final-rule);
+  }
+  .mb-item:last-child { border-right: none; }
+  .mb-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.52rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--final-sub);
+    display: block;
+    margin-bottom: 0.5rem;
+  }
+  .mb-price {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.25rem;
+    color: var(--final-ink);
+  }
+  .mb-bar { margin-top: 0.65rem; height: 2px; background: var(--mb-empty); }
+  .mb-bar-fill { height: 100%; background: var(--brand); }
+
+  .final-numbers {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 2.5rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--final-rule);
+  }
+  .fn-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.53rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--final-sub);
+    display: block;
+    margin-bottom: 0.38rem;
+  }
+  .fn-val {
+    font-family: 'Playfair Display', serif;
+    font-size: 2rem;
+    font-weight: 600;
+    line-height: 1;
+    color: var(--final-ink);
+  }
+  .fn-val.undervalued { color: var(--under-color); }
+  .fn-val.overvalued  { color: #f07070; }
+  .fn-sub {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.58rem;
+    color: var(--final-sub);
+    margin-top: 0.32rem;
+    letter-spacing: 0.05em;
+  }
+
+  /* FLAGS */
+  .flag-item {
+    display: flex;
+    gap: 1rem;
+    align-items: flex-start;
+    padding: 1.05rem 0;
+    border-bottom: 1px solid var(--rule);
+    transition: border-color 0.3s;
+  }
+  .flag-item:last-child { border-bottom: none; }
+  .flag-dot {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    margin-top: 0.48rem;
+    flex-shrink: 0;
+  }
+  .flag-dot.warn  { background: #c8943a; }
+  .flag-dot.error { background: var(--brand); }
+  .flag-text {
+    font-family: 'Spectral', serif;
+    font-size: 0.87rem;
+    line-height: 1.6;
+    color: var(--ink-2);
+    transition: color 0.3s;
+  }
+  .flag-text strong {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.08em;
+    font-weight: 400;
+    color: var(--ink);
+    display: block;
+    margin-bottom: 0.18rem;
+    transition: color 0.3s;
+  }
+
+  /* FOOTER */
+  footer {
+    border-top: 1px solid var(--rule);
+    padding: 1.6rem 4rem;
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    gap: 2rem;
+    transition: border-color 0.3s;
+  }
+  .footer-left {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.57rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+    line-height: 1.9;
+    transition: color 0.3s;
+  }
+  .footer-sig { text-align: center; }
+  .sig-by {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.53rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+    display: block;
+    margin-bottom: 0.28rem;
+    transition: color 0.3s;
+  }
+  .sig-name {
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+    font-size: 1.2rem;
+    color: var(--brand);
+    white-space: nowrap;
+  }
+  .footer-right {
+    font-family: 'Spectral', serif;
+    font-style: italic;
+    font-size: 0.74rem;
+    color: var(--ink-3);
+    text-align: right;
+    line-height: 1.7;
+    transition: color 0.3s;
+  }
+
+  /* ANIMATIONS */
+  @keyframes fadeDown {
+    from { opacity:0; transform:translateY(-10px); }
+    to   { opacity:1; transform:translateY(0); }
+  }
+  @keyframes fadeUp {
+    from { opacity:0; transform:translateY(13px); }
+    to   { opacity:1; transform:translateY(0); }
+  }
+
+  /* RESPONSIVE */
+  @media (max-width:760px) {
+    .masthead       { padding:1.5rem; grid-template-columns:1fr; }
+    .verdict-banner { padding:1rem 1.5rem; flex-direction:column; align-items:flex-start; }
+    .verdict-meta   { gap:1.4rem; flex-wrap:wrap; }
+    .content        { padding:2rem 1.5rem 5rem; }
+    .models-breakdown { grid-template-columns:1fr 1fr; }
+    .mb-item:nth-child(2),
+    .mb-item:nth-child(4) { border-right:none; }
+    .final-numbers  { grid-template-columns:1fr 1fr; }
+    footer          { padding:1.4rem 1.5rem; grid-template-columns:1fr; gap:1rem; }
+    .footer-right   { text-align:left; }
+    .theme-toggle   { top:0.9rem; right:1rem; }
+  }
+</style>
+</head>
+<body>
+
+<button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
+  <div class="toggle-track"><div class="toggle-thumb"></div></div>
+  <span id="ticon" style="font-size:0.9rem;line-height:1;">🌙</span>
+</button>
+
+<header class="masthead">
+  <div>
+    <div class="eyebrow">Equity Fair Value Analysis</div>
+    <div class="ticker-row">
+      <span class="ticker">T<em>S</em>M</span>
+      <span class="company-name">Taiwan Semiconductor Manufacturing Co.</span>
+    </div>
+  </div>
+  <div class="masthead-right">
+    <div class="date-tag">May 2026</div>
+    <span class="price-label">Current Price</span>
+    <div class="price-number">$397.67</div>
+  </div>
+</header>
+
+<div class="verdict-banner">
+  <div class="verdict-text">Undervalued — trading at a 29.9% discount to fair value</div>
+  <div class="verdict-meta">
+    <div class="vm-item"><span class="vm-label">Avg Fair Value</span><span class="vm-val">$567.65</span></div>
+    <div class="vm-item"><span class="vm-label">Margin of Safety</span><span class="vm-val">10%</span></div>
+    <div class="vm-item"><span class="vm-label">Limit Buy</span><span class="vm-val">$510.88</span></div>
+  </div>
+</div>
+
+<main class="content">
+
+  <div class="section-head">
+    <span class="section-num">01</span>
+    <span class="section-title">Valuation Models</span>
+    <div class="section-rule"></div>
+  </div>
+
+  <!-- DDM -->
+  <div class="model-card">
+    <div class="model-card-header">
+      <div>
+        <div class="model-eyebrow">Model 01</div>
+        <div class="model-name">Dividend Discount Model</div>
+      </div>
+      <div class="model-output">
+        <span class="model-price-label">Fair Value</span>
+        <div class="model-price" style="color:var(--ink-3)">N/A</div>
+        <span class="badge" style="background:var(--bg-raised);color:var(--ink-3)">Not Applicable</span>
+      </div>
+    </div>
+    <table class="div-table">
+      <thead><tr><th>Year</th><th>Quarterly Div. (ADR)</th><th>Annual Div.</th><th>YoY Growth</th></tr></thead>
+      <tbody>
+        <tr><td>2025</td><td>$0.6085</td><td>$2.430</td><td class="growth-up">+32.6%</td></tr>
+        <tr><td>2024</td><td>$0.4579</td><td>$1.832</td><td class="growth-up">+26.3%</td></tr>
+        <tr><td>2023</td><td>$0.3627</td><td>$1.451</td><td class="growth-up">+1.0%</td></tr>
+        <tr><td>2022</td><td>$0.3593</td><td>$1.437</td><td class="growth-down">−3.4%</td></tr>
+        <tr><td>2021</td><td>$0.3717</td><td>$1.487</td><td>—</td></tr>
+      </tbody>
+    </table>
+    <div class="data-grid" style="margin-top:1.5rem;">
+      <div><span class="di-label">Avg Div. Growth (4yr)</span><span class="di-val">14.1%</span></div>
+      <div><span class="di-label">Required Return (r)</span><span class="di-val">12.0%</span></div>
+      <div><span class="di-label">DDM Result</span><span class="di-val">Undefined (g > r)</span></div>
+    </div>
+    <div style="background:var(--bg-raised);border-left:3px solid var(--brand);padding:0.8rem 1rem;margin-top:1rem;font-size:0.78rem;color:var(--ink-2);font-family:'Spectral',serif;font-style:italic;">
+      DDM is structurally inapplicable to TSM. Dividend growth (14%+) exceeds any reasonable required return, making the Gordon Growth model mathematically undefined. TSM is a growth compounder, not a yield vehicle. This model is excluded from the final average.
+    </div>
+  </div>
+
+  <!-- DCF -->
+  <div class="model-card">
+    <div class="model-card-header">
+      <div>
+        <div class="model-eyebrow">Model 02</div>
+        <div class="model-name">Discounted Cash Flow</div>
+      </div>
+      <div class="model-output">
+        <span class="model-price-label">Fair Value</span>
+        <div class="model-price">$421.63</div>
+        <span class="badge under">Undervalued</span>
+      </div>
+    </div>
+    <div class="fcf-scroll">
+      <table class="fcf-table">
+        <thead><tr>
+          <th style="text-align:left">Metric</th>
+          <th>2015</th><th>2016</th><th>2017</th><th>2018</th><th>2019</th>
+          <th>2020</th><th>2021</th><th>2022</th><th>2023</th><th>2024</th>
+        </tr></thead>
+        <tbody>
+          <tr>
+            <td>FCF ($B)</td>
+            <td>9.5</td><td>9.8</td><td>8.2</td><td>8.5</td><td>10.0</td>
+            <td>16.0</td><td>11.3</td><td>17.2</td><td>9.6</td><td>26.6</td>
+          </tr>
+          <tr>
+            <td>Growth</td><td>—</td>
+            <td>+3.2%</td><td>−16.3%</td><td>+3.7%</td><td>+17.6%</td>
+            <td>+60.0%</td><td>−29.4%</td><td>+52.2%</td><td>−44.2%</td><td>+177.1%</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="data-grid" style="margin-top:1.5rem;">
+      <div><span class="di-label">Base FCF (2026E)</span><span class="di-val">$35.0B</span></div>
+      <div><span class="di-label">Discount Rate</span><span class="di-val">9.0%</span></div>
+      <div><span class="di-label">Perpetual Growth</span><span class="di-val">3.0%</span></div>
+      <div><span class="di-label">Equity Value</span><span class="di-val">$2,188B</span></div>
+      <div><span class="di-label">ADR Shares Out. (M)</span><span class="di-val">5,190</span></div>
+      <div><span class="di-label">Proj. FCF Growth</span><span class="di-val">20.0%</span></div>
+    </div>
+  </div>
+
+  <!-- MULTIPLES -->
+  <div class="model-card">
+    <div class="model-card-header">
+      <div>
+        <div class="model-eyebrow">Model 03</div>
+        <div class="model-name">Peer Multiples — P/E</div>
+      </div>
+      <div class="model-output">
+        <span class="model-price-label">Fair Value</span>
+        <div class="model-price">$677.70</div>
+        <span class="badge under">Undervalued</span>
+      </div>
+    </div>
+    <table class="peer-table">
+      <thead><tr>
+        <th>Ticker</th><th>Company</th>
+        <th style="text-align:right">Price</th>
+        <th style="text-align:right">Fwd EPS</th>
+        <th style="text-align:right">Fwd P/E</th>
+      </tr></thead>
+      <tbody>
+        <tr><td>NVDA</td><td>Nvidia</td><td style="text-align:right">$200.17</td><td style="text-align:right">$4.50</td><td style="text-align:right">44.5x</td></tr>
+        <tr><td>ASML</td><td>ASML Holding</td><td style="text-align:right">$850.00</td><td style="text-align:right">$25.00</td><td style="text-align:right">34.0x</td></tr>
+        <tr><td>AVGO</td><td>Broadcom</td><td style="text-align:right">$420.72</td><td style="text-align:right">$6.82</td><td style="text-align:right">61.7x</td></tr>
+        <tr><td>MU</td><td>Micron Technology</td><td style="text-align:right">$531.05</td><td style="text-align:right">$9.50</td><td style="text-align:right">55.9x</td></tr>
+      </tbody>
+    </table>
+    <div class="data-grid" style="margin-top:1.5rem;">
+      <div><span class="di-label">Average Fwd P/E</span><span class="di-val">49.0x</span></div>
+      <div><span class="di-label">Median Fwd P/E</span><span class="di-val">50.2x</span></div>
+      <div><span class="di-label">Forward EPS (TSM)</span><span class="di-val">$13.50</span></div>
+    </div>
+  </div>
+
+  <!-- GRAHAM -->
+  <div class="model-card">
+    <div class="model-card-header">
+      <div>
+        <div class="model-eyebrow">Model 04</div>
+        <div class="model-name">Benjamin Graham's Revised Formula</div>
+      </div>
+      <div class="model-output">
+        <span class="model-price-label">Intrinsic Value</span>
+        <div class="model-price">$766.27</div>
+        <span class="badge under">Undervalued</span>
+      </div>
+    </div>
+    <div class="data-grid">
+      <div><span class="di-label">Forward EPS</span><span class="di-val">$13.50</span></div>
+      <div><span class="di-label">P/E Constant</span><span class="di-val">8.5</span></div>
+      <div><span class="di-label">Est. EPS Growth</span><span class="di-val">30.0%</span></div>
+      <div><span class="di-label">Growth Constant</span><span class="di-val">1.5</span></div>
+      <div><span class="di-label">AAA Bond Constant</span><span class="di-val">4.4%</span></div>
+      <div><span class="di-label">Current AAA Yield</span><span class="di-val">5.31%</span></div>
+    </div>
+  </div>
+
+  <!-- PETER LYNCH -->
+  <div class="model-card">
+    <div class="model-card-header">
+      <div>
+        <div class="model-eyebrow">Model 05</div>
+        <div class="model-name">Peter Lynch's Adapted Fair Value</div>
+      </div>
+      <div class="model-output">
+        <span class="model-price-label">Fair Value</span>
+        <div class="model-price">$405.00</div>
+        <span class="badge under">Undervalued</span>
+      </div>
+    </div>
+    <div class="data-grid">
+      <div><span class="di-label">Forward EPS</span><span class="di-val">$13.50</span></div>
+      <div><span class="di-label">Forward P/E</span><span class="di-val">29.5x</span></div>
+      <div><span class="di-label">PEG Ratio</span><span class="di-val">0.98</span></div>
+      <div><span class="di-label">Proj. EPS Growth</span><span class="di-val">30.0%</span></div>
+      <div><span class="di-label">Lynch FV (EPS × g)</span><span class="di-val">$405.00</span></div>
+    </div>
+  </div>
+
+  <!-- FINAL -->
+  <div class="section-head" style="margin-top:4rem;">
+    <span class="section-num">02</span>
+    <span class="section-title">Final Valuation</span>
+    <div class="section-rule"></div>
+  </div>
+
+  <div class="final-card">
+    <div class="fc-title">Unweighted average across four applicable models — DDM excluded (see flags)</div>
+    <div class="models-breakdown">
+      <div class="mb-item"><span class="mb-label">DDM</span><span class="mb-price" style="color:var(--final-sub)">N/A</span><div class="mb-bar"><div class="mb-bar-fill" style="width:0%"></div></div></div>
+      <div class="mb-item"><span class="mb-label">DCF</span><span class="mb-price">$421.63</span><div class="mb-bar"><div class="mb-bar-fill" style="width:55%"></div></div></div>
+      <div class="mb-item"><span class="mb-label">Multiples</span><span class="mb-price">$677.70</span><div class="mb-bar"><div class="mb-bar-fill" style="width:88%"></div></div></div>
+      <div class="mb-item"><span class="mb-label">Graham</span><span class="mb-price">$766.27</span><div class="mb-bar"><div class="mb-bar-fill" style="width:100%"></div></div></div>
+      <div class="mb-item"><span class="mb-label">Lynch</span><span class="mb-price">$405.00</span><div class="mb-bar"><div class="mb-bar-fill" style="width:53%"></div></div></div>
+    </div>
+    <div class="final-numbers">
+      <div>
+        <span class="fn-label">Average Fair Value</span>
+        <div class="fn-val undervalued">$567.65</div>
+        <div class="fn-sub">Mean of 4 applicable models</div>
+      </div>
+      <div>
+        <span class="fn-label">Current Price</span>
+        <div class="fn-val">$397.67</div>
+        <div class="fn-sub">−29.9% vs. fair value</div>
+      </div>
+      <div>
+        <span class="fn-label">Limit Buy (10% MoS)</span>
+        <div class="fn-val undervalued">$510.88</div>
+        <div class="fn-sub">Price is below limit buy ✓</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FLAGS -->
+  <div class="section-head" style="margin-top:4rem;">
+    <span class="section-num">03</span>
+    <span class="section-title">Flags to Revisit</span>
+    <div class="section-rule"></div>
+  </div>
+
+  <div>
+    <div class="flag-item">
+      <div class="flag-dot error"></div>
+      <div class="flag-text">
+        <strong>DDM · Model Excluded</strong>
+        TSM's dividend growth rate (~14%) exceeds any defensible required return for the stock, making the Gordon Growth Model mathematically undefined. DDM is excluded from the final average. TSM is a growth compounder, not a yield vehicle — this is expected.
+      </div>
+    </div>
+    <div class="flag-item">
+      <div class="flag-dot error"></div>
+      <div class="flag-text">
+        <strong>Geopolitical Risk · Taiwan Strait</strong>
+        No valuation model captures the binary risk of a Taiwan conflict scenario. This is the single largest unquantifiable risk in the thesis. The market applies a structural discount to TSM for this reason — which partially explains why it trades well below its fundamental fair value.
+      </div>
+    </div>
+    <div class="flag-item">
+      <div class="flag-dot warn"></div>
+      <div class="flag-text">
+        <strong>DCF · FCF Volatility</strong>
+        TSM's FCF is highly volatile due to lumpy capex cycles (−44% in 2023, +177% in 2024). The 2026 base of $35B assumes continued AI-driven demand. If capex accelerates faster than revenue, FCF compresses and the DCF output drops materially.
+      </div>
+    </div>
+    <div class="flag-item">
+      <div class="flag-dot warn"></div>
+      <div class="flag-text">
+        <strong>FX Risk · NTD/USD</strong>
+        TSM reports in NTD. ADR valuations carry ~100% sensitivity to USD/NTD exchange rate movements. A strengthening USD inflates reported figures; a weakening USD compresses them. All USD figures here assume current exchange rates.
+      </div>
+    </div>
+    <div class="flag-item">
+      <div class="flag-dot warn"></div>
+      <div class="flag-text">
+        <strong>Average · Weighting</strong>
+        Four models receive equal weight. Graham and Multiples are bullish; Lynch and DCF are conservative. A DDM-replacement model (e.g. excess return or H-model) would be more appropriate for TSM and should be added in a future revision.
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<footer>
+  <div class="footer-left">
+    Taiwan Semiconductor Mfg. Co. (TSM)<br>
+    Fair Value Analysis · May 2026
+  </div>
+  <div class="footer-sig">
+    <span class="sig-by">Analysis by</span>
+    <span class="sig-name">Luís Cupido</span>
+  </div>
+  <div class="footer-right">
+    For informational purposes only.<br>Not financial advice.
+  </div>
+</footer>
+
+<script>
+  function toggleTheme() {
+    const html = document.documentElement;
+    const going = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    html.setAttribute('data-theme', going);
+    document.getElementById('ticon').textContent = going === 'dark' ? '🌙' : '☀️';
+  }
+  // set initial label
+  document.getElementById('ticon').textContent =
+    document.documentElement.getAttribute('data-theme') === 'dark' ? '🌙' : '☀️';
+</script>
+</body>
+</html>
