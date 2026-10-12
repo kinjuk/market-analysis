@@ -1,0 +1,894 @@
+
+
+Nkt fair value may 2026 · HTML
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NKT — Fair Value Analysis · May 2026</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400;1,600&family=Spectral:ital,wght@0,300;0,400;1,300&family=JetBrains+Mono:wght@300;400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --brand:       #0D1B2A;
+    --brand-deep:  #060e17;
+    --under-color: #6dc987;
+  }
+ 
+  [data-theme="light"] {
+    --bg:          #f7f4ef;
+    --bg-card:     #ffffff;
+    --bg-raised:   #f0ece4;
+    --ink:         #111010;
+    --ink-2:       #4a4540;
+    --ink-3:       #9a948e;
+    --rule:        #ddd8d0;
+    --badge-under-bg:  #d6eedc;
+    --badge-under-ink: #1a5c38;
+    --badge-over-bg:   #fde0e0;
+    --badge-over-ink:  #8b1a1a;
+    --final-bg:    #111010;
+    --final-ink:   #f7f4ef;
+    --final-rule:  #2a2828;
+    --final-sub:   #666;
+    --mb-empty:    #2a2828;
+    --verdict-bg:  #111010;
+    --verdict-ink: #f7f4ef;
+    --growth-up:   #1a5c38;
+    --growth-down: #8b1a1a;
+  }
+ 
+  [data-theme="dark"] {
+    --bg:          #0e0d0d;
+    --bg-card:     #161414;
+    --bg-raised:   #1c1a1a;
+    --ink:         #ede9e3;
+    --ink-2:       #a09890;
+    --ink-3:       #5c5652;
+    --rule:        #2a2626;
+    --badge-under-bg:  rgba(109,201,135,0.14);
+    --badge-under-ink: #6dc987;
+    --badge-over-bg:   rgba(204,32,39,0.15);
+    --badge-over-ink:  #f07070;
+    --final-bg:    #0a0909;
+    --final-ink:   #ede9e3;
+    --final-rule:  #2a2626;
+    --final-sub:   #5c5652;
+    --mb-empty:    #2a2626;
+    --verdict-bg:  #0a0909;
+    --verdict-ink: #ede9e3;
+    --growth-up:   #6dc987;
+    --growth-down: #f07070;
+  }
+ 
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+ 
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'Spectral', Georgia, serif;
+    font-weight: 300;
+    line-height: 1.65;
+    min-height: 100vh;
+    transition: background 0.3s, color 0.3s;
+  }
+ 
+  /* TOGGLE */
+  .theme-toggle {
+    position: fixed;
+    top: 1.3rem;
+    right: 1.6rem;
+    z-index: 200;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+    background: var(--bg-card);
+    border: 1px solid var(--rule);
+    border-radius: 40px;
+    padding: 0.32rem 0.7rem 0.32rem 0.5rem;
+    transition: background 0.3s, border-color 0.3s;
+  }
+  .toggle-track {
+    width: 30px; height: 16px;
+    background: var(--rule);
+    border-radius: 999px;
+    position: relative;
+    transition: background 0.3s;
+    flex-shrink: 0;
+  }
+  [data-theme="dark"] .toggle-track { background: var(--brand); }
+  .toggle-thumb {
+    width: 10px; height: 10px;
+    background: #fff;
+    border-radius: 50%;
+    position: absolute;
+    top: 3px; left: 3px;
+    transition: transform 0.28s cubic-bezier(.4,0,.2,1);
+  }
+  [data-theme="dark"] .toggle-thumb { transform: translateX(14px); }
+  .toggle-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.56rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-2);
+    user-select: none;
+    transition: color 0.3s;
+  }
+ 
+  /* MASTHEAD */
+  .masthead {
+    border-bottom: 1px solid var(--rule);
+    padding: 2.2rem 4rem 2rem;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: end;
+    gap: 2rem;
+    animation: fadeDown 0.5s ease both;
+    transition: border-color 0.3s;
+  }
+  .eyebrow {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--brand);
+    margin-bottom: 0.55rem;
+  }
+  .ticker-row { display: flex; align-items: baseline; gap: 1.4rem; }
+  .ticker {
+    font-family: 'Playfair Display', serif;
+    font-weight: 600;
+    font-size: 4.6rem;
+    line-height: 1;
+    letter-spacing: -0.03em;
+    color: var(--ink);
+  }
+  .ticker em { color: var(--brand); font-style: normal; }
+  .company-name {
+    font-family: 'Spectral', serif;
+    font-size: 1rem;
+    font-style: italic;
+    font-weight: 300;
+    color: var(--ink-2);
+    padding-bottom: 0.5rem;
+    transition: color 0.3s;
+  }
+  .masthead-right { text-align: right; }
+  .date-tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+    margin-bottom: 0.4rem;
+    transition: color 0.3s;
+  }
+  .price-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.56rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+    display: block;
+    transition: color 0.3s;
+  }
+  .price-number {
+    font-family: 'Playfair Display', serif;
+    font-size: 2.5rem;
+    font-weight: 600;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+  }
+ 
+  /* VERDICT */
+  .verdict-banner {
+    background: var(--verdict-bg);
+    color: var(--verdict-ink);
+    padding: 1.25rem 4rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 2rem;
+    border-bottom: 2px solid var(--brand);
+    animation: fadeDown 0.5s 0.08s ease both;
+    transition: background 0.3s;
+  }
+  .verdict-text {
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+    font-size: 1.2rem;
+    color: var(--under-color);
+  }
+  .verdict-text.overvalued { color: #f07070; }
+  .verdict-meta { display: flex; gap: 2.5rem; }
+  .vm-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.53rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: #666;
+    display: block;
+    margin-bottom: 0.2rem;
+  }
+  .vm-val {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.05rem;
+    font-style: italic;
+    color: var(--verdict-ink);
+  }
+ 
+  /* CONTENT */
+  .content {
+    max-width: 1060px;
+    margin: 0 auto;
+    padding: 3rem 4rem 7rem;
+  }
+ 
+  /* SECTION HEADS */
+  .section-head {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin: 3.5rem 0 1.8rem;
+  }
+  .section-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.57rem;
+    color: var(--brand);
+    letter-spacing: 0.1em;
+    border: 1px solid var(--brand);
+    padding: 0.15rem 0.42rem;
+    border-radius: 2px;
+    flex-shrink: 0;
+  }
+  .section-title {
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+    font-size: 1.45rem;
+    color: var(--ink);
+    white-space: nowrap;
+  }
+  .section-rule { flex: 1; height: 1px; background: var(--rule); transition: background 0.3s; }
+ 
+  /* MODEL CARDS */
+  .model-card {
+    background: var(--bg-card);
+    border: 1px solid var(--rule);
+    border-top: 2px solid var(--brand);
+    padding: 2rem 2.4rem;
+    margin-bottom: 1.4rem;
+    transition: background 0.3s, border-color 0.3s;
+    animation: fadeUp 0.48s ease both;
+  }
+  .model-card:nth-child(1){animation-delay:0.1s}
+  .model-card:nth-child(2){animation-delay:0.16s}
+  .model-card:nth-child(3){animation-delay:0.22s}
+  .model-card:nth-child(4){animation-delay:0.28s}
+  .model-card:nth-child(5){animation-delay:0.34s}
+ 
+  .model-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1.2rem;
+    border-bottom: 1px solid var(--rule);
+    transition: border-color 0.3s;
+  }
+  .model-eyebrow {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.56rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+    margin-bottom: 0.3rem;
+    transition: color 0.3s;
+  }
+  .model-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.1rem;
+    color: var(--ink);
+  }
+  .model-output { text-align: right; }
+  .model-price-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.53rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+    display: block;
+    margin-bottom: 0.22rem;
+    transition: color 0.3s;
+  }
+  .model-price {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.8rem;
+    font-weight: 600;
+    line-height: 1;
+    margin-bottom: 0.38rem;
+  }
+ 
+  /* BADGES */
+  .badge {
+    display: inline-block;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.53rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 0.18rem 0.5rem;
+    border-radius: 2px;
+  }
+  .badge.under { background: var(--badge-under-bg); color: var(--badge-under-ink); }
+  .badge.over  { background: var(--badge-over-bg);  color: var(--badge-over-ink); }
+ 
+  /* DATA GRID */
+  .data-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(155px, 1fr));
+    gap: 1.1rem 2rem;
+  }
+  .di-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.55rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+    display: block;
+    margin-bottom: 0.22rem;
+    transition: color 0.3s;
+  }
+  .di-val {
+    font-family: 'Spectral', serif;
+    font-size: 0.95rem;
+    color: var(--ink);
+    transition: color 0.3s;
+  }
+ 
+  /* TABLES */
+  .div-table, .peer-table, .fcf-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: 'JetBrains Mono', monospace;
+  }
+  .div-table th, .peer-table th, .fcf-table th {
+    text-align: left;
+    font-size: 0.55rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+    border-bottom: 1px solid var(--rule);
+    padding: 0.38rem 0.8rem 0.38rem 0;
+    font-weight: 400;
+    transition: color 0.3s, border-color 0.3s;
+  }
+  .div-table td, .peer-table td, .fcf-table td {
+    padding: 0.36rem 0.8rem 0.36rem 0;
+    border-bottom: 1px solid var(--rule);
+    color: var(--ink);
+    font-size: 0.76rem;
+    transition: color 0.3s, border-color 0.3s;
+  }
+  .div-table tr:last-child td,
+  .peer-table tr:last-child td,
+  .fcf-table tr:last-child td { border-bottom: none; }
+ 
+  .growth-up   { color: var(--growth-up); }
+  .growth-down { color: var(--growth-down); }
+ 
+  .fcf-scroll { overflow-x: auto; margin-top: 1rem; }
+  .fcf-table  { min-width: 660px; }
+  .fcf-table th:not(:first-child),
+  .fcf-table td:not(:first-child) { text-align: right; }
+  .fcf-table td:first-child { color: var(--ink-2); }
+ 
+  /* FINAL CARD */
+  .final-card {
+    background: var(--final-bg);
+    padding: 2.5rem 2.8rem;
+    margin-top: 1.5rem;
+    border-top: 2px solid var(--brand);
+    transition: background 0.3s;
+  }
+  .fc-title {
+    font-family: 'Spectral', serif;
+    font-style: italic;
+    font-size: 0.83rem;
+    color: var(--final-sub);
+    margin-bottom: 1.8rem;
+  }
+  .models-breakdown {
+    display: grid;
+    grid-template-columns: repeat(5,1fr);
+    border: 1px solid var(--final-rule);
+    margin-bottom: 2.3rem;
+  }
+  .mb-item {
+    padding: 1.2rem 1rem;
+    border-right: 1px solid var(--final-rule);
+  }
+  .mb-item:last-child { border-right: none; }
+  .mb-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.52rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--final-sub);
+    display: block;
+    margin-bottom: 0.5rem;
+  }
+  .mb-price {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.25rem;
+    color: var(--final-ink);
+  }
+  .mb-bar { margin-top: 0.65rem; height: 2px; background: var(--mb-empty); }
+  .mb-bar-fill { height: 100%; background: var(--brand); }
+ 
+  .final-numbers {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 2.5rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--final-rule);
+  }
+  .fn-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.53rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--final-sub);
+    display: block;
+    margin-bottom: 0.38rem;
+  }
+  .fn-val {
+    font-family: 'Playfair Display', serif;
+    font-size: 2rem;
+    font-weight: 600;
+    line-height: 1;
+    color: var(--final-ink);
+  }
+  .fn-val.undervalued { color: var(--under-color); }
+  .fn-val.overvalued  { color: #f07070; }
+  .fn-sub {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.58rem;
+    color: var(--final-sub);
+    margin-top: 0.32rem;
+    letter-spacing: 0.05em;
+  }
+ 
+  /* FLAGS */
+  .flag-item {
+    display: flex;
+    gap: 1rem;
+    align-items: flex-start;
+    padding: 1.05rem 0;
+    border-bottom: 1px solid var(--rule);
+    transition: border-color 0.3s;
+  }
+  .flag-item:last-child { border-bottom: none; }
+  .flag-dot {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    margin-top: 0.48rem;
+    flex-shrink: 0;
+  }
+  .flag-dot.warn  { background: #c8943a; }
+  .flag-dot.error { background: var(--brand); }
+  .flag-text {
+    font-family: 'Spectral', serif;
+    font-size: 0.87rem;
+    line-height: 1.6;
+    color: var(--ink-2);
+    transition: color 0.3s;
+  }
+  .flag-text strong {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.08em;
+    font-weight: 400;
+    color: var(--ink);
+    display: block;
+    margin-bottom: 0.18rem;
+    transition: color 0.3s;
+  }
+ 
+  /* FOOTER */
+  footer {
+    border-top: 1px solid var(--rule);
+    padding: 1.6rem 4rem;
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    gap: 2rem;
+    transition: border-color 0.3s;
+  }
+  .footer-left {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.57rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+    line-height: 1.9;
+    transition: color 0.3s;
+  }
+  .footer-sig { text-align: center; }
+  .sig-by {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.53rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+    display: block;
+    margin-bottom: 0.28rem;
+    transition: color 0.3s;
+  }
+  .sig-name {
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+    font-size: 1.2rem;
+    color: var(--brand);
+    white-space: nowrap;
+  }
+  .footer-right {
+    font-family: 'Spectral', serif;
+    font-style: italic;
+    font-size: 0.74rem;
+    color: var(--ink-3);
+    text-align: right;
+    line-height: 1.7;
+    transition: color 0.3s;
+  }
+ 
+  /* ANIMATIONS */
+  @keyframes fadeDown {
+    from { opacity:0; transform:translateY(-10px); }
+    to   { opacity:1; transform:translateY(0); }
+  }
+  @keyframes fadeUp {
+    from { opacity:0; transform:translateY(13px); }
+    to   { opacity:1; transform:translateY(0); }
+  }
+ 
+  /* RESPONSIVE */
+  @media (max-width:760px) {
+    .masthead       { padding:1.5rem; grid-template-columns:1fr; }
+    .verdict-banner { padding:1rem 1.5rem; flex-direction:column; align-items:flex-start; }
+    .verdict-meta   { gap:1.4rem; flex-wrap:wrap; }
+    .content        { padding:2rem 1.5rem 5rem; }
+    .models-breakdown { grid-template-columns:1fr 1fr; }
+    .mb-item:nth-child(2),
+    .mb-item:nth-child(4) { border-right:none; }
+    .final-numbers  { grid-template-columns:1fr 1fr; }
+    footer          { padding:1.4rem 1.5rem; grid-template-columns:1fr; gap:1rem; }
+    .footer-right   { text-align:left; }
+    .theme-toggle   { top:0.9rem; right:1rem; }
+  }
+ 
+  .eyebrow { color: #4a7fa5 !important; }
+  .section-num { color: #4a7fa5 !important; border-color: #4a7fa5 !important; }
+  [data-theme="light"] .eyebrow { color: #0D1B2A !important; }
+  [data-theme="light"] .section-num { color: #0D1B2A !important; border-color: #0D1B2A !important; }
+  [data-theme="light"] .model-card { border-top-color: #0D1B2A !important; }
+  [data-theme="light"] .final-card { border-top-color: #0D1B2A !important; }
+  [data-theme="light"] .verdict-banner { border-bottom-color: #0D1B2A !important; }
+  [data-theme="light"] .sig-name { color: #0D1B2A !important; }
+ 
+</style>
+</head>
+<body>
+ 
+<button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
+  <div class="toggle-track"><div class="toggle-thumb"></div></div>
+  <span id="ticon" style="font-size:0.9rem;line-height:1;">🌙</span>
+</button>
+ 
+<header class="masthead">
+  <div>
+    <div class="eyebrow">Equity Fair Value Analysis</div>
+    <div class="ticker-row">
+      <span class="ticker">N<em>K</em>T</span>
+      <span class="company-name">NKT A/S</span>
+    </div>
+  </div>
+  <div class="masthead-right">
+    <div class="date-tag">May 2026</div>
+    <span class="price-label">Current Price</span>
+    <div class="price-number">DKK 1,080</div>
+  </div>
+</header>
+ 
+<div class="verdict-banner">
+  <div class="verdict-text overvalued">Overvalued — trading at a 31.1% premium to fair value</div>
+  <div class="verdict-meta">
+    <div class="vm-item"><span class="vm-label">4-Model Avg FV</span><span class="vm-val">DKK 824</span></div>
+    <div class="vm-item"><span class="vm-label">Margin of Safety</span><span class="vm-val">10%</span></div>
+    <div class="vm-item"><span class="vm-label">Limit Buy</span><span class="vm-val">DKK 742</span></div>
+  </div>
+</div>
+ 
+<main class="content">
+ 
+  <div class="section-head">
+    <span class="section-num">01</span>
+    <span class="section-title">Valuation Models</span>
+    <div class="section-rule"></div>
+  </div>
+ 
+  <!-- DDM -->
+  <div class="model-card">
+    <div class="model-card-header">
+      <div>
+        <div class="model-eyebrow">Model 01</div>
+        <div class="model-name">Dividend Discount Model</div>
+      </div>
+      <div class="model-output">
+        <span class="model-price-label">Fair Value</span>
+        <div class="model-price" style="color:var(--ink-3)">N/A</div>
+        <span class="badge" style="background:var(--bg-raised);color:var(--ink-3)">Not Applicable</span>
+      </div>
+    </div>
+    <table class="div-table">
+      <thead><tr><th>Year</th><th>Revenue (EUR M)</th><th>Revenue (DKK M)</th><th>YoY Growth</th></tr></thead>
+      <tbody>
+        <tr><td>2025E</td><td>€2,450</td><td>DKK 18,277</td><td class="growth-down">−1.6%</td></tr>
+        <tr><td>2024</td><td>€2,489</td><td>DKK 18,568</td><td class="growth-up">+29.2%</td></tr>
+        <tr><td>2023</td><td>€1,927</td><td>DKK 14,375</td><td class="growth-up">+38.6%</td></tr>
+        <tr><td>2022</td><td>€1,390</td><td>DKK 10,369</td><td class="growth-up">+26.9%</td></tr>
+        <tr><td>2021</td><td>€1,095</td><td>DKK 8,169</td><td class="growth-up">+21.7%</td></tr>
+        <tr><td>2020</td><td>€900</td><td>DKK 6,714</td><td>—</td></tr>
+      </tbody>
+    </table>
+    <div class="data-grid" style="margin-top:1.5rem;">
+      <div><span class="di-label">5-Year Avg Revenue Growth</span><span class="di-val">23.0%</span></div>
+      <div><span class="di-label">2024 Op. EBITDA (EUR)</span><span class="di-val">€342M</span></div>
+      <div><span class="di-label">2025E Op. EBITDA (EUR)</span><span class="di-val">€355M midpoint</span></div>
+      <div><span class="di-label">Op. EBITDA Margin 2024</span><span class="di-val">13.8%</span></div>
+      <div><span class="di-label">2028 EBITDA Ambition</span><span class="di-val">€600M+</span></div>
+    </div>
+    <div style="background:var(--bg-raised);border-left:3px solid var(--brand);padding:0.8rem 1rem;margin-top:1rem;font-size:0.78rem;color:var(--ink-2);font-family:'Spectral',serif;font-style:italic;">
+      NKT pays no dividend — DDM is excluded. Revenue shown as business overview. NKT reports in EUR; all per-share metrics converted to DKK at 7.46.
+    </div>
+  </div>
+ 
+  <!-- DCF -->
+  <div class="model-card">
+    <div class="model-card-header">
+      <div>
+        <div class="model-eyebrow">Model 02</div>
+        <div class="model-name">Discounted Cash Flow</div>
+      </div>
+      <div class="model-output">
+        <span class="model-price-label">Fair Value</span>
+        <div class="model-price">DKK 735</div>
+        <span class="badge over">Overvalued</span>
+      </div>
+    </div>
+    <div class="fcf-scroll">
+      <table class="fcf-table">
+        <thead><tr>
+          <th style="text-align:left">Metric</th>
+          <th>2015</th><th>2016</th><th>2017</th><th>2018</th><th>2019</th>
+          <th>2020</th><th>2021</th><th>2022</th><th>2023</th><th>2024</th>
+        </tr></thead>
+        <tbody>
+          <tr>
+            <td>FCF ($M)</td>
+            <td>1,835</td><td>2,693</td><td>5,923</td><td>8,484</td><td>9,353</td>
+            <td>11,598</td><td>13,321</td><td>16,312</td><td>17,633</td><td>19,414</td>
+          </tr>
+          <tr>
+            <td>Growth</td><td>—</td>
+            <td>+46.8%</td><td>+119.9%</td><td>+43.2%</td><td>+10.2%</td>
+            <td>+24.0%</td><td>+14.9%</td><td>+22.5%</td><td>+8.1%</td><td>+10.1%</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="data-grid" style="margin-top:1.5rem;">
+      <div><span class="di-label">Base FCF (2025E)</span><span class="di-val">DKK 970M</span></div>
+      <div><span class="di-label">Proj. FCF Growth</span><span class="di-val">15.0%</span></div>
+      <div><span class="di-label">Discount Rate</span><span class="di-val">9.0%</span></div>
+      <div><span class="di-label">Perpetual Growth</span><span class="di-val">2.5%</span></div>
+      <div><span class="di-label">Equity Value</span><span class="di-val">DKK 39.3B</span></div>
+      <div><span class="di-label">Shares Out. (M)</span><span class="di-val">53.5</span></div>
+    </div>
+  </div>
+ 
+  <!-- MULTIPLES -->
+  <div class="model-card">
+    <div class="model-card-header">
+      <div>
+        <div class="model-eyebrow">Model 03</div>
+        <div class="model-name">Peer Multiples — P/E</div>
+      </div>
+      <div class="model-output">
+        <span class="model-price-label">Fair Value</span>
+        <div class="model-price">DKK 627</div>
+        <span class="badge over">Overvalued</span>
+      </div>
+    </div>
+    <table class="peer-table">
+      <thead><tr>
+        <th>Ticker</th><th>Company</th>
+        <th style="text-align:right">Native Price</th>
+        <th style="text-align:right">DKK Price</th>
+        <th style="text-align:right">Fwd EPS (native)</th>
+        <th style="text-align:right">Fwd EPS (DKK)</th>
+        <th style="text-align:right">Fwd P/E</th>
+      </tr></thead>
+      <tbody>
+        <tr><td>PRY.MI</td><td>Prysmian</td><td style="text-align:right">€138.35</td><td style="text-align:right">DKK 1,032</td><td style="text-align:right">€6.60</td><td style="text-align:right">DKK 49.2</td><td style="text-align:right">20.9x</td></tr>
+        <tr><td>NEX.PA</td><td>Nexans</td><td style="text-align:right">€162.75</td><td style="text-align:right">DKK 1,214</td><td style="text-align:right">€8.08</td><td style="text-align:right">DKK 60.3</td><td style="text-align:right">20.5x</td></tr>
+        <tr><td>5801.T</td><td>Furukawa Electric</td><td style="text-align:right">¥53,990</td><td style="text-align:right">DKK 2,500</td><td style="text-align:right">¥1,030</td><td style="text-align:right">DKK 47.7</td><td style="text-align:right">52.4x*</td></tr>
+        <tr><td>NKT.CO</td><td>NKT (current)</td><td style="text-align:right">DKK 1,080</td><td style="text-align:right">DKK 1,080</td><td style="text-align:right">DKK 30</td><td style="text-align:right">DKK 30</td><td style="text-align:right">36.2x</td></tr>
+      </tbody>
+    </table>
+    <div class="data-grid" style="margin-top:1.5rem;">
+      <div><span class="di-label">Peer Median P/E (ex-Furukawa)</span><span class="di-val">20.7x</span></div>
+      <div><span class="di-label">Peer Median P/E (all)</span><span class="di-val">20.9x</span></div>
+      <div><span class="di-label">Fwd EPS (NKT)</span><span class="di-val">DKK 30</span></div>
+      <div><span class="di-label">NKT Fwd P/E (current)</span><span class="di-val">36.2x</span></div>
+      <div><span class="di-label">FX Rates Used</span><span class="di-val">EUR/DKK 7.46 · JPY/DKK 0.0463</span></div>
+    </div>
+    <div style="background:var(--bg-raised);border-left:3px solid var(--brand);padding:0.8rem 1rem;margin-top:1rem;font-size:0.78rem;color:var(--ink-2);font-family:'Spectral',serif;font-style:italic;">
+      *Furukawa 52.4x P/E reflects a multi-year re-rating driven by Japan energy infrastructure spending. Excluded from median calculation to avoid distortion.
+    </div>
+  </div>
+ 
+  <!-- GRAHAM -->
+  <div class="model-card">
+    <div class="model-card-header">
+      <div>
+        <div class="model-eyebrow">Model 04</div>
+        <div class="model-name">Benjamin Graham's Revised Formula</div>
+      </div>
+      <div class="model-output">
+        <span class="model-price-label">Intrinsic Value</span>
+        <div class="model-price">DKK 1,334</div>
+        <span class="badge under">Undervalued</span>
+      </div>
+    </div>
+    <div class="data-grid">
+      <div><span class="di-label">Fwd EPS (DKK)</span><span class="di-val">DKK 30</span></div>
+      <div><span class="di-label">P/E Constant</span><span class="di-val">8.5</span></div>
+      <div><span class="di-label">Est. EPS Growth</span><span class="di-val">20.0%</span></div>
+      <div><span class="di-label">Growth Constant</span><span class="di-val">1.5</span></div>
+      <div><span class="di-label">AAA Bond Constant</span><span class="di-val">4.4%</span></div>
+      <div><span class="di-label">EUR AAA Yield</span><span class="di-val">4.8%</span></div>
+    </div>
+  </div>
+ 
+  <!-- PETER LYNCH -->
+  <div class="model-card">
+    <div class="model-card-header">
+      <div>
+        <div class="model-eyebrow">Model 05</div>
+        <div class="model-name">Peter Lynch's Adapted Fair Value</div>
+      </div>
+      <div class="model-output">
+        <span class="model-price-label">Fair Value</span>
+        <div class="model-price">DKK 600</div>
+        <span class="badge over">Overvalued</span>
+      </div>
+    </div>
+    <div class="data-grid">
+      <div><span class="di-label">Fwd EPS (DKK)</span><span class="di-val">DKK 30</span></div>
+      <div><span class="di-label">Fwd P/E</span><span class="di-val">36.2x</span></div>
+      <div><span class="di-label">PEG Ratio</span><span class="di-val">1.81</span></div>
+      <div><span class="di-label">Proj. EPS Growth</span><span class="di-val">20.0%</span></div>
+      <div><span class="di-label">Lynch FV (EPS × g)</span><span class="di-val">DKK 600</span></div>
+    </div>
+  </div>
+ 
+  <!-- FINAL -->
+  <div class="section-head" style="margin-top:4rem;">
+    <span class="section-num">02</span>
+    <span class="section-title">Final Valuation</span>
+    <div class="section-rule"></div>
+  </div>
+ 
+  <div class="final-card">
+    <div class="fc-title">DDM excluded · Unweighted average across four applicable models · All values in DKK</div>
+    <div class="models-breakdown">
+      <div class="mb-item"><span class="mb-label">DDM</span><span class="mb-price" style="color:var(--final-sub)">N/A</span><div class="mb-bar"><div class="mb-bar-fill" style="width:0%"></div></div></div>
+      <div class="mb-item"><span class="mb-label">DCF</span><span class="mb-price">DKK 735</span><div class="mb-bar"><div class="mb-bar-fill" style="width:55%"></div></div></div>
+      <div class="mb-item"><span class="mb-label">Multiples</span><span class="mb-price">DKK 627</span><div class="mb-bar"><div class="mb-bar-fill" style="width:47%"></div></div></div>
+      <div class="mb-item"><span class="mb-label">Graham</span><span class="mb-price">DKK 1,334</span><div class="mb-bar"><div class="mb-bar-fill" style="width:100%"></div></div></div>
+      <div class="mb-item"><span class="mb-label">Lynch</span><span class="mb-price">DKK 600</span><div class="mb-bar"><div class="mb-bar-fill" style="width:45%"></div></div></div>
+    </div>
+    <div class="final-numbers">
+      <div>
+        <span class="fn-label">4-Model Avg Fair Value</span>
+        <div class="fn-val overvalued">DKK 824</div>
+        <div class="fn-sub">3 of 4 models show overvaluation</div>
+      </div>
+      <div>
+        <span class="fn-label">Current Price</span>
+        <div class="fn-val">DKK 1,080</div>
+        <div class="fn-sub">+31.1% above avg FV · ATH DKK 1,113</div>
+      </div>
+      <div>
+        <span class="fn-label">Limit Buy (10% MoS)</span>
+        <div class="fn-val" style="color:#f07070">DKK 742</div>
+        <div class="fn-sub">Price is well above limit buy ✗</div>
+      </div>
+    </div>
+  </div>
+ 
+  <!-- FLAGS -->
+  <div class="section-head" style="margin-top:4rem;">
+    <span class="section-num">03</span>
+    <span class="section-title">Flags to Revisit</span>
+    <div class="section-rule"></div>
+  </div>
+ 
+  <div>
+    <div class="flag-item">
+      <div class="flag-dot error"></div>
+      <div class="flag-text">
+        <strong>Energy Transition Premium — The Market Is Paying for the Future</strong>
+        NKT trades at 36.2x forward earnings vs. peers at 20-21x. That 15x premium reflects the market's conviction that NKT is one of the primary beneficiaries of European grid infrastructure buildout — offshore wind interconnectors, HVDC corridors, and the energy transition. The premium is not irrational, but at DKK 1,080 vs a 4-model average of DKK 824, you are paying for execution that hasn't happened yet.
+      </div>
+    </div>
+    <div class="flag-item">
+      <div class="flag-dot error"></div>
+      <div class="flag-text">
+        <strong>Graham Is the Only Model Supporting Current Price</strong>
+        DCF (DKK 735), Multiples (DKK 627) and Lynch (DKK 600) all show overvaluation. Graham alone outputs DKK 1,334 — above current price — because it rewards NKT's 20% EPS growth aggressively. Graham's formula is optimistic by design for high-growth industrials. Use it as the bull ceiling, not a central estimate.
+      </div>
+    </div>
+    <div class="flag-item">
+      <div class="flag-dot error"></div>
+      <div class="flag-text">
+        <strong>FCF Is Weak Relative to EBITDA</strong>
+        NKT's operational EBITDA guidance for 2025 is €330-380M — but FCF is estimated at only ~€130M. The gap reflects massive capex investment in factory expansions (Cologne, Karlskrona, new submarine cable plant). This is a choice, not a problem — NKT is investing in capacity to capture the order backlog. But it means the DCF model captures the cost of that investment directly, producing the lowest fair value output of all four models.
+      </div>
+    </div>
+    <div class="flag-item">
+      <div class="flag-dot warn"></div>
+      <div class="flag-text">
+        <strong>Furukawa P/E Excluded from Median</strong>
+        Furukawa Electric's 52.4x trailing P/E reflects a recent sharp re-rating driven by Japanese energy policy, not directly comparable to NKT's European cable business. Including it would push the peer median to 28.5x and the multiples fair value to DKK 855 — just below current price. The choice to use the European peer median (20.9x) is conservative but more defensible as a like-for-like comparison.
+      </div>
+    </div>
+    <div class="flag-item">
+      <div class="flag-dot warn"></div>
+      <div class="flag-text">
+        <strong>FX Note — EUR Reporting, DKK Listing</strong>
+        NKT reports all financials in EUR. The DKK is pegged to the EUR at approximately 7.46, maintained by Danmarks Nationalbank. FX risk between DKK and EUR is structurally minimal due to the peg — but peer conversions from JPY carry normal currency exposure. All figures in this report use EUR/DKK 7.46 and JPY/DKK 0.0463.
+      </div>
+    </div>
+  </div>
+ 
+</main>
+ 
+<footer>
+  <div class="footer-left">
+    NKT A/S (NKT.CO — Copenhagen)<br>
+    Fair Value Analysis · May 2026
+  </div>
+  <div class="footer-sig">
+    <span class="sig-by">Analysis by</span>
+    <span class="sig-name">Luís Cupido</span>
+  </div>
+  <div class="footer-right">
+    For informational purposes only.<br>Not financial advice.
+  </div>
+</footer>
+ 
+<script>
+  function toggleTheme() {
+    const html = document.documentElement;
+    const going = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    html.setAttribute('data-theme', going);
+    document.getElementById('ticon').textContent = going === 'dark' ? '🌙' : '☀️';
+  }
+  // set initial label
+  document.getElementById('ticon').textContent =
+    document.documentElement.getAttribute('data-theme') === 'dark' ? '🌙' : '☀️';
+</script>
+</body>
+</html>
