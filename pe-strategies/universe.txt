@@ -1,22 +1,44 @@
-# Stocks the web page offers (one per line). Single stocks with positive earnings work best:
-# ETFs/indices have no EPS. Cyclicals (XOM) invert the signal, so they are good examples of its weakness.
+# Stocks the web page offers (one per line, '#' lines are ignored).
+# Single stocks with positive earnings work best: ETFs/indices have no EPS.
+# Known weak spots: XOM (cyclical, inverts the signal), CEG (spun off 2022, short history), BE (mostly negative EPS),
+# BNP.PA (not an SEC filer: Yahoo EPS only, EUR), MAIN (BDC: GAAP EPS swings with unrealised gains).
+
+# Tech
 AAPL
 MSFT
-JNJ
+TXN
+IBM
+CSCO
+QCOM
+AVGO
+ADI
+
+# Consumer staples
 PG
 KO
 PEP
+WMT
+COST
+
+# Consumer discretionary
+HD
+MCD
+NKE
+QSR
+
+# Health
+JNJ
+UNH
+ABT
+
+# Financials
 JPM
 V
 MA
-WMT
-COST
-HD
-MCD
-UNH
+BNP.PA
+MAIN
+
+# Energy
 XOM
-ABT
-TXN
-NKE
-IBM
-CSCO
+CEG
+BE
