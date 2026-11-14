@@ -1,0 +1,22 @@
+# Stocks the web page offers (one per line). Single stocks with positive earnings work best:
+# ETFs/indices have no EPS. Cyclicals (XOM) invert the signal, so they are good examples of its weakness.
+AAPL
+MSFT
+JNJ
+PG
+KO
+PEP
+JPM
+V
+MA
+WMT
+COST
+HD
+MCD
+UNH
+XOM
+ABT
+TXN
+NKE
+IBM
+CSCO

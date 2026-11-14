@@ -31,7 +31,7 @@ def quarters(entries):
     return pd.concat(rows).drop_duplicates("end").sort_values("end").reset_index(drop=True)
 
 
-def ttm_series(q, dates, splits=None):
+def ttm_series(q, dates, splits=None, span_days=300):
     """TTM EPS per date from the latest 4 consecutive quarters filed on or before that date."""
     q = q.copy()
     if splits is not None and len(splits):
@@ -39,17 +39,14 @@ def ttm_series(q, dates, splits=None):
     out = pd.Series(np.nan, index=dates)
     for d in dates:
         k = q[q.filed <= d].tail(4)
-        if len(k) == 4 and (k.end.iloc[-1] - k.end.iloc[0]).days < 300:
+        if len(k) == 4 and (k.end.iloc[-1] - k.end.iloc[0]).days < span_days:
             out[d] = k.val.sum()
     return out
 
 
-def build(ticker, years=12):
+def sec_quarters(ticker, ua):
+    """Quarterly GAAP EPS (end, val, filed) from SEC EDGAR for a ticker."""
     import requests
-    import yfinance as yf
-    ua = os.environ.get("SEC_USER_AGENT")
-    if not ua:
-        raise SystemExit('Set SEC_USER_AGENT="Your Name you@email.com" (the SEC blocks anonymous requests).')
     get = lambda u: requests.get(u, headers={"User-Agent": ua}, timeout=30).json()
     cik = next((v["cik_str"] for v in get("https://www.sec.gov/files/company_tickers.json").values()
                 if v["ticker"] == ticker.upper()), None)
@@ -57,7 +54,15 @@ def build(ticker, years=12):
         raise SystemExit(f"{ticker}: not found in SEC ticker list (ETFs and indices have no EPS).")
     us = get(f"https://data.sec.gov/api/xbrl/companyfacts/CIK{int(cik):010d}.json")["facts"]["us-gaap"]
     tag = next(t for t in ("EarningsPerShareDiluted", "EarningsPerShareBasic") if t in us)
-    q = quarters(us[tag]["units"]["USD/shares"])
+    return quarters(us[tag]["units"]["USD/shares"])
+
+
+def build(ticker, years=12):
+    import yfinance as yf
+    ua = os.environ.get("SEC_USER_AGENT")
+    if not ua:
+        raise SystemExit('Set SEC_USER_AGENT="Your Name you@email.com" (the SEC blocks anonymous requests).')
+    q = sec_quarters(ticker, ua)
     t = yf.Ticker(ticker)
     px = t.history(period=f"{years}y", auto_adjust=False)["Close"]  # split-adjusted, not dividend-adjusted
     px.index = px.index.tz_localize(None)
