@@ -1,0 +1,10 @@
+# One ticker per line. Yahoo often returns no forward P/E for ETFs: run `python log_pe.py` once,
+# read the "No usable forward P/E" line, and edit this list accordingly.
+SPY
+QQQ
+MSFT
+AAPL
+JPM
+KO
+JNJ
+PG
