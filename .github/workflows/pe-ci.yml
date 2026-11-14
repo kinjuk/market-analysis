@@ -1,0 +1,20 @@
+name: pe-strategies CI
+on:
+  push:
+    paths: ["pe-strategies/**", ".github/workflows/pe-ci.yml"]
+  pull_request:
+    paths: ["pe-strategies/**"]
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    defaults: { run: { working-directory: pe-strategies } }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12", cache: pip, cache-dependency-path: pe-strategies/requirements-dev.txt }
+      - uses: actions/setup-node@v4
+        with: { node-version: 20 }
+      - run: pip install -r requirements-dev.txt
+      - run: pytest -q
+      - run: python app/test/make_fixtures.py
+      - run: node --test app/test/parity.test.mjs
