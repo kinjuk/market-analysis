@@ -9,6 +9,10 @@ Long when P/E **crosses below** its N-year average; exit when it reaches **1.2×
 
 A backtest on trailing P/E does **not** validate the forward-P/E signal; it tests the idea on a related series. Say so wherever you show results.
 
+## Visualize a test
+`pe-reversion.ipynb` (or `python report.py --ticker AAPL --benchmark SPY`) plots P/E vs its average, growth of 1 against buy-and-hold and SPY/QQQ, drawdowns and a stats table, using the standard parameters in `strategy.md`.
+Install: `pip install -r requirements-dev.txt jupyter`.
+
 ## Use
     pip install -r requirements-dev.txt && pytest -q
     # backtest (single stock)
