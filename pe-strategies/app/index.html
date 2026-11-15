@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>P/E mean reversion · market-analysis</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/uplot@1.6.31/dist/uPlot.min.css">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="app">
+  <aside>
+    <h1>P/E mean reversion</h1>
+    <p class="sub">Long below the P/E average, out at a multiple of it.</p>
+    <div class="f"><label for="ticker">Stock</label><select id="ticker"></select></div>
+    <div class="f"><label for="bench">Benchmark</label><select id="bench"></select></div>
+    <div class="f"><label for="from">Start date</label><input id="from" type="date"></div>
+    <div class="f"><label for="lookbackYears">P/E average window <output id="o-lookbackYears"></output></label><input id="lookbackYears" type="range" min="1" max="10" step="0.5"></div>
+    <div class="f"><label for="entry">Enter below <output id="o-entry"></output> × average</label><input id="entry" type="range" min="0.8" max="1.1" step="0.01"></div>
+    <div class="f"><label for="exitMult">Exit at <output id="o-exitMult"></output> × average</label><input id="exitMult" type="range" min="1.02" max="1.5" step="0.01"></div>
+    <div class="f"><label for="costBps">Cost per side <output id="o-costBps"></output> bps</label><input id="costBps" type="range" min="0" max="50" step="1"></div>
+    <div class="f"><label for="delayDays">Fill delay <output id="o-delayDays"></output> close(s) after signal</label><input id="delayDays" type="range" min="0" max="5" step="1"></div>
+    <div class="row"><button id="reset" class="btn">Standard test</button><button id="share" class="btn">Copy link</button><button id="theme" class="btn">Theme</button></div>
+  </aside>
+  <main>
+    <div id="banners" aria-live="polite"></div>
+    <section id="stats"></section>
+    <section class="panel"><h2>P/E vs its average <small>green = invested</small></h2><div id="c-pe"></div></section>
+    <section class="panel"><h2>Growth of 1 <small>net of costs, dividends reinvested</small></h2><div id="c-growth"></div></section>
+    <section class="panel"><h2>Drawdown</h2><div id="c-dd"></div></section>
+    <section class="panel"><h2>Sensitivity: excess CAGR vs buy-and-hold <small>click a cell to use it</small></h2>
+      <div id="grid"></div>
+      <p class="note">Look for broad areas of the same colour, not the single best cell: picking the best one is overfitting.</p></section>
+    <section class="panel"><h2>Trades <button id="csv" class="btn small">Download CSV</button></h2><div id="trades" class="scroll"></div></section>
+    <footer>Backtests use trailing P/E (point-in-time, no look-ahead); the live forward-P/E signal is a different series that is still accumulating. Few trades means anecdote, not evidence. Not financial advice.</footer>
+  </main>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/uplot@1.6.31/dist/uPlot.iife.min.js"></script>
+<script type="module" src="app.js"></script>
+</body>
+</html>

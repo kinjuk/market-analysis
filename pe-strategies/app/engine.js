@@ -115,8 +115,11 @@ export function run(stock, bench, params = {}) {
   const { avg: given, ...rest } = params
   const P = { ...STANDARD, ...rest }
   const avg = given ?? rollingAvg(stock.days, stock.pe, P.lookbackYears, P.minCoverage)
-  const start = stock.pe.findIndex((v, i) => !Number.isNaN(v / avg[i]))
-  if (start < 0) return { error: 'Not enough P/E history for this lookback.', P }
+  const valid = stock.pe.findIndex((v, i) => !Number.isNaN(v / avg[i]))
+  if (valid < 0) return { error: 'Not enough P/E history for this lookback.', P }
+  const from = P.from ? stock.dates.findIndex((d) => d >= P.from) : 0
+  if (from < 0) return { error: 'The start date is after the last available date.', P }
+  const start = Math.max(valid, from)
   const state = stateMachine(stock.pe, avg, P.entry, P.exitMult)
   const bt = backtest(state, stock.adj, P.delayDays, P.costBps)
   const dates = stock.dates.slice(start)

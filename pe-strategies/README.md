@@ -1,6 +1,9 @@
 # P/E mean reversion
 Long when P/E **crosses below** its N-year average; exit when it reaches **1.2×** that average; cash in between.
 
+## Web page (GitHub Pages)
+`app/index.html`: pick a stock, SPY or QQQ as benchmark, and tweak the average window, entry, exit, costs, delay and start date. Shows P/E vs its average, growth of 1, drawdown, an entry × exit sensitivity grid, the trade list (CSV export), and a shareable link that stores your settings. It runs entirely in the browser on `app/engine.js`, which is tested against the Python engine (`app/test/`). Data comes from `app/data/*.json` (built weekly by the "Build site data" workflow from `universe.txt`); without data it shows clearly labelled demo data.
+
 ## Two modes, two different series
 | | Series | Source | History |
 |---|---|---|---|

@@ -56,3 +56,12 @@ test('drawdown is measured from the first observation, not from an implicit star
   // Python: cum = [0.90, 0.945], running max = [0.90, 0.945] -> max drawdown is 0
   assert.equal(stats(Float64Array.from([-0.1, 0.05])).maxDD, 0)
 })
+
+test('a later start date trims the window without changing the rules', () => {
+  const full = run(stock, bench, {})
+  const from = full.dates[400]
+  const later = run(stock, bench, { from })
+  assert.equal(later.dates[0], from)
+  assert.equal(later.dates.length, full.dates.length - 400)
+  assert.match(run(stock, bench, { from: '2099-01-01' }).error, /after the last/)
+})
