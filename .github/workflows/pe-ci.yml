@@ -17,4 +17,4 @@ jobs:
       - run: pip install -r requirements-dev.txt
       - run: pytest -q
       - run: python app/test/make_fixtures.py
-      - run: node --test app/test/parity.test.mjs app/test/ui-state.test.mjs
+      - run: node --test app/test/parity.test.mjs app/test/ui-state.test.mjs app/test/upload.test.mjs
