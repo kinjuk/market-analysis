@@ -45,6 +45,7 @@ export function mergeUpload(files, { maxStaleDays = 100 } = {}) {
   const pe = series('pe')
   if (!price.length) throw new Error('No price column found (need Adj Close, Close or Price).')
   if (!pe.length) throw new Error('No P/E column found (need a column named PE or P/E).')
+  if (price.length > 20000) throw new Error('Daily data only: over 20,000 rows (about 80 years of trading days).')
   if (price.length < 250) throw new Error(`Only ${price.length} price rows; need at least 250.`)
   const day = (d) => Date.parse(`${d}T00:00:00Z`) / 86400000
   const out = { dates: [], adj_close: [], pe: [] }

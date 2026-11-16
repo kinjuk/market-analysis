@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
-import { DEFAULT_STATE, decodeState, encodeState, heatColor, toCsv } from '../ui-state.js'
+import { DEFAULT_STATE, decodeState, encodeState, heatColor, plateau, plural, toCsv } from '../ui-state.js'
 
 const ctx = { tickers: ['AAPL', 'MSFT'], benches: ['SPY', 'QQQ'] }
 
@@ -36,4 +36,16 @@ test('heat colour is green when positive, red when negative, and saturates', () 
   assert.match(heatColor(0.02), /--good/)
   assert.match(heatColor(-0.02), /--bad/)
   assert.equal(heatColor(0.5), heatColor(0.05))
+})
+
+
+test('plural: one trade, zero trades, many trades', () => {
+  assert.deepEqual([plural(1, 'trade'), plural(0, 'trade'), plural(7, 'trade')], ['1 trade', '0 trades', '7 trades'])
+})
+
+test('plateau counts neighbours that beat buy-and-hold and ignores empty cells', () => {
+  const c = (x) => ({ excessCagr: x })
+  const grid = [[c(0.1), c(-0.1), null], [c(0.2), c(0.3), c(0.1)], [null, c(-0.2), c(0.1)]]
+  assert.deepEqual(plateau(grid, 1, 1), { n: 6, ahead: 4 })
+  assert.deepEqual(plateau(grid, 0, 0), { n: 3, ahead: 2 })
 })

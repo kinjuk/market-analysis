@@ -1,6 +1,6 @@
-import { parseSeries, run, sensitivity } from './engine.js'
+import { halves, parseSeries, run, sensitivity, tradeStats, universe } from './engine.js'
 import { mergeUpload, parseCsv, cleanName } from './upload.js'
-import { DEFAULT_STATE, decodeState, encodeState, heatColor, toCsv } from './ui-state.js'
+import { DEFAULT_STATE, decodeState, encodeState, heatColor, plateau, plural, toCsv } from './ui-state.js'
 
 const $ = (id) => document.getElementById(id)
 const cache = new Map()
@@ -12,7 +12,8 @@ const SRC = { sec: 'SEC EPS', yahoo: 'Yahoo EPS', 'shiller-proxy': 'S&P 500 prox
 const UP_KEY = 'pe-uploads'
 const pct = (x, d = 1) => `${(x * 100).toFixed(d)}%`
 const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c])
-let manifest, state, demo = false, seq = 0, raf = 0, gridTimer = 0, lastRes
+let manifest, state, demo = false, seq = 0, raf = 0, gridTimer = 0, lastRes, uniOn = false, uniTimer = 0, cleared = null
+const signed = (x) => `${x >= 0 ? '+' : ''}${(x * 100).toFixed(1)}%`
 
 // ---------- data ----------
 async function loadManifest() {
@@ -66,11 +67,20 @@ async function addUpload() {
   } catch (e) { $('upmsg').textContent = e.message }
 }
 function clearUploads() {
-  const names = Object.keys(saved())
+  cleared = saved()
+  const names = Object.keys(cleared)
   for (const n of manifest.tickers.filter((t) => t.eps_source === 'uploaded').map((t) => t.ticker).concat(names)) cache.delete(n)
   manifest.tickers = manifest.tickers.filter((t) => t.eps_source !== 'uploaded')
   try { localStorage.removeItem(UP_KEY) } catch {}
-  fillTickers(); state.ticker = ctx().tickers[0] ?? ''; sync(); schedule(); $('upmsg').textContent = 'Uploaded data removed.'
+  fillTickers(); state.ticker = ctx().tickers[0] ?? ''; sync(); schedule()
+  $('upmsg').textContent = 'Uploaded data removed.'
+  if (names.length) $('upmsg').append(Object.assign(document.createElement('button'), { className: 'link', textContent: 'Undo', onclick: undoClear }))
+}
+function undoClear() {
+  for (const [n, j] of Object.entries(cleared ?? {})) register(n, j)
+  try { localStorage.setItem(UP_KEY, JSON.stringify(cleared)) } catch {}
+  const first = Object.keys(cleared ?? {})[0]
+  cleared = null; fillTickers(); if (first) state.ticker = first; sync(); schedule(); $('upmsg').textContent = 'Restored.'
 }
 
 // ---------- controls ----------
@@ -89,6 +99,7 @@ function bind() {
   })
   for (const k of ['ticker', 'bench', 'from']) $(k).addEventListener('change', (e) => { state[k] = e.target.value; sync(); schedule() })
   $('upadd').onclick = addUpload; $('upclear').onclick = clearUploads
+  $('uni').onclick = () => { uniOn = true; $('uni').textContent = 'Refresh'; renderUniverse().catch((e) => message(e.message)) }
   $('reset').onclick = () => { state = { ...DEFAULT_STATE, ticker: state.ticker, bench: state.bench }; sync(); schedule() }
   $('share').onclick = async () => { try { await navigator.clipboard.writeText(location.href); $('share').textContent = 'Link copied' } catch { prompt('Copy this link', location.href) } setTimeout(() => ($('share').textContent = 'Copy link'), 1500) }
   $('theme').onclick = () => { const t = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark'; setTheme(t); update() }
@@ -101,22 +112,31 @@ function bind() {
   window.addEventListener('hashchange', () => { state = decodeState(location.hash, ctx()); sync(); schedule() })
   let rt; window.addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(() => Object.values(plots).forEach((p) => p.u.setSize({ width: p.el.clientWidth, height: p.h })), 150) })
 }
-function setTheme(t) { document.documentElement.dataset.theme = t; try { localStorage.setItem('pe-theme', t) } catch {} }
+function setTheme(t) {
+  document.documentElement.dataset.theme = t
+  document.querySelector('meta[name=theme-color]')?.setAttribute('content', t === 'dark' ? '#171011' : '#ffffff')
+  if ($('theme')) $('theme').textContent = t === 'dark' ? 'Light mode' : 'Dark mode'
+  try { localStorage.setItem('pe-theme', t) } catch {}
+}
 const ctx = () => ({ tickers: manifest.tickers.filter((t) => t.first_pe).map((t) => t.ticker), benches: manifest.tickers.map((t) => t.ticker).filter((t) => demo ? t === 'DEMO-BENCH' : ['SPY', 'QQQ'].includes(t)) })
 
 // ---------- charts ----------
 const css = (n) => getComputedStyle(document.documentElement).getPropertyValue(n).trim()
 const nn = (a) => Array.from(a, (v) => (Number.isNaN(v) ? null : v))
-function mount(id, sig, h, series, data, hooks = {}, yfmt) {
+function mount(id, sig, h, series, data, hooks = {}, yfmt, cap) {
   const el = $(id), key = `${sig}|${document.documentElement.dataset.theme}`
   const p = plots[id]
-  if (p && p.key === key) return p.u.setData(data)
+  if (p && p.key === key) { p.cap = cap; return p.u.setData(data) }
   p?.u.destroy(); el.replaceChildren()
   const axis = { stroke: css('--mut'), grid: { stroke: css('--line'), width: 1 }, ticks: { stroke: css('--line') } }
-  const u = new uPlot({ width: el.clientWidth || 600, height: h, cursor: { sync: { key: 'pe' } }, scales: { x: { time: true } }, hooks,
+  const rec = { key, el, h, cap }
+  plots[id] = rec
+  rec.u = new uPlot({ width: el.clientWidth || 600, height: h, cursor: { sync: { key: 'pe' } }, hooks,
+    scales: { x: { time: true }, y: { range: (u, mn, mx) => [mn, rec.cap ? Math.min(mx, rec.cap) : mx] } },
     axes: [axis, { ...axis, values: yfmt ? (_, v) => v.map(yfmt) : undefined }], series: [{}, ...series.map((s) => ({ width: 1.5, points: { show: false }, ...s }))] }, data, el)
-  plots[id] = { key, u, el, h }
 }
+/** A few weeks of absurd P/E readings (near-zero earnings) would flatten the whole chart: cap the axis at 1.5x the 95th percentile. */
+function peCap(pe) { const v = Array.from(pe).filter((x) => !Number.isNaN(x)).sort((p, q) => p - q); return v.length ? v[Math.floor(v.length * 0.95)] * 1.5 : 0 }
 function drawCharts(res, stock, bench) {
   const x = res.dates.map((d) => Date.parse(`${d}T00:00:00Z`) / 1000)
   const sig = `${state.ticker}|${state.bench}`
@@ -124,7 +144,7 @@ function drawCharts(res, stock, bench) {
   for (let i = 0; i < res.pos.length;) { if (res.pos[i] !== 1) { i++; continue } let j = i; while (j < res.pos.length && res.pos[j] === 1) j++; runs.push([i, j - 1]); i = j }
   const shade = { drawClear: [(u) => { const { ctx: c } = u; const { top, height } = u.bbox; c.save(); c.fillStyle = `${css('--green')}33`; for (const [i, j] of runs) { const x0 = u.valToPos(x[i], 'x', true), x1 = u.valToPos(x[j], 'x', true); c.fillRect(x0, top, Math.max(1, x1 - x0), height) } c.restore() }] }
   mount('c-pe', sig, 260, [{ label: 'P/E', stroke: css('--s1') }, { label: 'P/E average', stroke: css('--grey') }, { label: 'exit level', stroke: css('--gold'), dash: [5, 4], width: 1 }],
-    [x, nn(res.pe), nn(res.avg), nn(res.avg).map((v) => (v === null ? null : v * state.exitMult))], shade)
+    [x, nn(res.pe), nn(res.avg), nn(res.avg).map((v) => (v === null ? null : v * state.exitMult))], shade, undefined, peCap(res.pe))
   const cum = (r) => { let c = 1; return Array.from(r, (v) => (c *= 1 + v)) }
   const g = [cum(res.strat), cum(res.hold), cum(res.bench)]
   mount('c-growth', sig, 300, [{ label: 'Strategy', stroke: css('--s1'), width: 2.4 }, { label: `${state.ticker} buy & hold`, stroke: css('--grey') }, { label: `${state.bench} buy & hold`, stroke: css('--gold') }], [x, ...g], {}, (v) => `${v.toFixed(1)}×`)
@@ -138,7 +158,15 @@ function renderStats(res) {
   const cols = [['Strategy', res.stats.strategy], [`${state.ticker} buy & hold`, res.stats.hold], [`${state.bench} buy & hold`, res.stats.bench]]
   $('stats').innerHTML = `<table><thead><tr><th></th>${cols.map(([n]) => `<th>${esc(n)}</th>`).join('')}</tr></thead><tbody>` +
     rows.map(([n, f]) => `<tr><td>${n}</td>${cols.map(([, s]) => `<td>${f(s)}</td>`).join('')}</tr>`).join('') +
-    `<tr><td>Time in market · trades</td><td>${pct(res.timeInMarket, 0)} · ${res.trades.length}</td><td>–</td><td>–</td></tr></tbody></table>`
+    extra(res) + '</tbody></table>'
+}
+function extra(res) {
+  const ts = tradeStats(res.trades), h = halves(res), dash = '<td>–</td>'
+  const sh = (s) => s.sharpe.toFixed(2)
+  return `<tr><td>Time in market · trades</td><td>${pct(res.timeInMarket, 0)} · ${plural(res.trades.length, 'trade')}</td>${dash}${dash}</tr>` +
+    `<tr><td>Win rate · average trade</td><td>${ts.n ? `${pct(ts.winRate, 0)} · ${pct(ts.avgTrade)}` : '–'}</td>${dash}${dash}</tr>` +
+    `<tr><td>Best trade, share of gains</td><td>${Number.isNaN(ts.bestShare) ? '–' : pct(ts.bestShare, 0)}</td>${dash}${dash}</tr>` +
+    `<tr><td>Sharpe, first / second half</td><td>${h ? `${sh(h.first.strategy)} / ${sh(h.second.strategy)}` : '–'}</td><td>${h ? `${sh(h.first.hold)} / ${sh(h.second.hold)}` : '–'}</td>${dash}</tr>`
 }
 function renderTrades(res) {
   $('trades').innerHTML = res.trades.length ? `<table><thead><tr><th>Entry</th><th>Last day held</th><th>Days</th><th>Return</th></tr></thead><tbody>${res.trades.map((t) => `<tr><td>${t.entry}</td><td>${t.open ? 'still open' : t.last}</td><td>${t.days}</td><td>${pct(t.ret)}</td></tr>`).join('')}</tbody></table>` : '<p class="note">No trades with these settings.</p>'
@@ -150,13 +178,28 @@ function renderGrid(stock, bench) {
   const g = sensitivity(stock, bench, { ...state, from: state.from || undefined }, ENTRIES, EXITS)
   $('grid').innerHTML = `<table><thead><tr><th>enter \\ exit</th>${EXITS.map((x) => `<th>${x.toFixed(2)}×</th>`).join('')}</tr></thead><tbody>` +
     ENTRIES.map((e, i) => `<tr><th>${e.toFixed(2)}×</th>${EXITS.map((x, j) => { const c = g[i][j]; if (!c) return '<td>–</td>'; const cur = Math.abs(e - state.entry) < 1e-9 && Math.abs(x - state.exitMult) < 1e-9
-      return `<td><button class="${cur ? 'cur' : ''}" data-en="${e}" data-ex="${x}" style="background:${heatColor(c.excessCagr)}" title="CAGR ${pct(c.cagr)} · Sharpe ${c.sharpe.toFixed(2)}">${c.excessCagr >= 0 ? '+' : ''}${(c.excessCagr * 100).toFixed(1)}%<small>${c.trades} trades</small></button></td>` })}</tr>`).join('') + '</tbody></table>'
+      return `<td><button class="${cur ? 'cur' : ''}" data-en="${e}" data-ex="${x}" style="background:${heatColor(c.excessCagr)}" title="CAGR ${pct(c.cagr)} · Sharpe ${c.sharpe.toFixed(2)}">${c.excessCagr >= 0 ? '+' : ''}${(c.excessCagr * 100).toFixed(1)}%<small>${plural(c.trades, 'trade')}</small></button></td>` })}</tr>`).join('') + '</tbody></table>'
+  const gi = ENTRIES.findIndex((e) => Math.abs(e - state.entry) < 1e-9), gj = EXITS.findIndex((x) => Math.abs(x - state.exitMult) < 1e-9)
+  const pl = gi >= 0 && gj >= 0 && g[gi][gj] ? plateau(g, gi, gj) : null
+  $('plateau').textContent = pl ? `${pl.ahead} of ${pl.n} neighbouring settings beat buy-and-hold.` : ''
   $('grid').querySelectorAll('button').forEach((b) => (b.onclick = () => { state.entry = Number(b.dataset.en); state.exitMult = Number(b.dataset.ex); sync(); schedule() }))
+}
+
+async function renderUniverse() {
+  const list = manifest.tickers.filter((t) => t.first_pe).map((t) => t.ticker)
+  const bench = await loadSeries(state.bench)
+  const stocks = Object.fromEntries(await Promise.all(list.map(async (t) => [t, await loadSeries(t)])))
+  const u = universe(stocks, bench, { ...state, from: state.from || undefined })
+  if (!u.total) { $('uniout').innerHTML = '<p class="note">No stock has enough P/E history for these settings.</p>'; return }
+  $('uniout').innerHTML = `<p class="note">${u.ahead} of ${u.total} stocks beat buy-and-hold with these settings. Median difference in CAGR: ${signed(u.median)}.</p><div class="scroll"><table><thead><tr><th>Stock</th><th>vs buy-and-hold</th><th>CAGR</th><th>Max drawdown</th><th>Trades</th></tr></thead><tbody>` +
+    u.rows.map((r) => `<tr><td><button class="link" data-t="${esc(r.ticker)}">${esc(r.ticker)}</button></td><td style="background:${heatColor(r.excess)}">${signed(r.excess)}</td><td>${pct(r.cagr)}</td><td>${pct(r.maxDD)}</td><td>${r.trades}</td></tr>`).join('') + '</tbody></table></div>'
+  $('uniout').querySelectorAll('button[data-t]').forEach((b) => (b.onclick = () => { state.ticker = b.dataset.t; sync(); schedule(); window.scrollTo({ top: 0 }) }))
 }
 
 // ---------- main ----------
 async function update() {
   const mine = ++seq
+  if (!state.ticker) { message('No stocks loaded yet. Add your own data in the sidebar.'); for (const id of ['stats', 'grid', 'trades']) $(id).replaceChildren(); caption(null); return }
   try {
     const [stock, bench] = await Promise.all([loadSeries(state.ticker), loadSeries(state.bench)])
     if (mine !== seq) return
@@ -166,12 +209,17 @@ async function update() {
     if (res.error) { for (const id of ['stats', 'grid', 'trades']) $(id).replaceChildren(); return }
     renderStats(res); renderTrades(res); drawCharts(res, stock, bench)
     clearTimeout(gridTimer); gridTimer = setTimeout(() => renderGrid(stock, bench), 120)
+    if (uniOn) { clearTimeout(uniTimer); uniTimer = setTimeout(() => renderUniverse().catch((e) => message(e.message)), 350) }
   } catch (e) { message(e.message) }
 }
 async function main() {
   try { setTheme(localStorage.getItem('pe-theme') ?? (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')) } catch {}
-  manifest = await loadManifest()
+  const q = new URLSearchParams(location.search)
+  const dev = q.has('dev') ? await import('./dev-fixtures.js') : null
+  const mode = dev ? q.get('data') ?? 'demo' : 'live'
+  if (mode === 'worst') { manifest = dev.worst(cache, parseSeries); demo = true } else if (mode === 'empty') { manifest = { tickers: [] }; demo = true } else manifest = await loadManifest()
   if (!manifest) { demo = true; manifest = makeDemo() }
+  dev?.mountToggle(mode)
   for (const [n, j] of Object.entries(saved())) { try { register(n, j) } catch {} }
   const c = ctx()
   for (const [id, list] of [['ticker', c.tickers], ['bench', c.benches]]) $(id).replaceChildren(...list.map((t) => Object.assign(document.createElement('option'), { value: t, textContent: t })))

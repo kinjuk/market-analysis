@@ -3,6 +3,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="color-scheme" content="light dark">
+  <meta name="theme-color" content="#ffffff">
   <title>P/E mean reversion · market-analysis</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/uplot@1.6.31/dist/uPlot.min.css">
   <link rel="stylesheet" href="style.css">
@@ -12,20 +14,26 @@
   <aside>
     <h1>P/E mean reversion</h1>
     <p class="sub">Long below the P/E average, out at a multiple of it.</p>
-    <div class="f"><label for="ticker">Stock</label><select id="ticker"></select><p id="src" class="cap"></p></div>
-    <div class="f"><label for="bench">Benchmark</label><select id="bench"></select></div>
-    <div class="f"><label for="from">Start date</label><input id="from" type="date"></div>
-    <div class="f"><label for="lookbackYears">P/E average window <output id="o-lookbackYears"></output></label><input id="lookbackYears" type="range" min="1" max="10" step="0.5"></div>
-    <div class="f"><label for="entry">Enter below <output id="o-entry"></output> × average</label><input id="entry" type="range" min="0.8" max="1.1" step="0.01"></div>
-    <div class="f"><label for="exitMult">Exit at <output id="o-exitMult"></output> × average</label><input id="exitMult" type="range" min="1.02" max="1.5" step="0.01"></div>
-    <div class="f"><label for="costBps">Cost per side <output id="o-costBps"></output> bps</label><input id="costBps" type="range" min="0" max="50" step="1"></div>
-    <div class="f"><label for="delayDays">Fill delay <output id="o-delayDays"></output> close(s) after signal</label><input id="delayDays" type="range" min="0" max="5" step="1"></div>
-    <div class="row"><button id="reset" class="btn">Standard test</button><button id="share" class="btn">Copy link</button><button id="theme" class="btn">Theme</button></div>
+    <div class="controls">
+      <div class="f wide"><label for="ticker">Stock</label><select id="ticker"></select><p id="src" class="cap"></p></div>
+      <div class="f"><label for="bench">Benchmark</label><select id="bench"></select></div>
+      <div class="f"><label for="from">Start date</label><input id="from" type="date"></div>
+      <div class="f"><label for="lookbackYears">P/E average <output id="o-lookbackYears"></output></label><input id="lookbackYears" type="range" min="1" max="10" step="0.5"></div>
+      <div class="f"><label for="entry">Enter below <output id="o-entry"></output>×</label><input id="entry" type="range" min="0.8" max="1.1" step="0.01"></div>
+      <div class="f"><label for="exitMult">Exit at <output id="o-exitMult"></output>×</label><input id="exitMult" type="range" min="1.02" max="1.5" step="0.01"></div>
+    </div>
+    <details class="adv"><summary>Costs and fills</summary>
+      <div class="controls">
+        <div class="f"><label for="costBps">Cost per side <output id="o-costBps"></output> bps</label><input id="costBps" type="range" min="0" max="50" step="1"></div>
+        <div class="f"><label for="delayDays">Fill delay <output id="o-delayDays"></output> close(s)</label><input id="delayDays" type="range" min="0" max="5" step="1"></div>
+      </div>
+    </details>
+    <div class="row"><button id="reset" class="btn">Standard test</button><button id="share" class="btn">Copy link</button><button id="theme" class="btn">Dark mode</button></div>
     <details class="up"><summary>Add your own data</summary>
       <input id="files" type="file" accept=".csv,text/csv" multiple>
-      <input id="upname" type="text" placeholder="Name, e.g. AAPL" maxlength="12">
+      <input id="upname" type="text" placeholder="Name, e.g. AAPL" maxlength="12" autocapitalize="characters" autocorrect="off" spellcheck="false" enterkeyhint="done">
       <div class="row"><button id="upadd" class="btn">Add</button><button id="upclear" class="btn">Clear</button></div>
-      <p id="upmsg" class="cap">A price CSV (Date, Adj Close) and a P/E CSV (Date, PE), or one file with both. Stays in your browser.</p>
+      <p id="upmsg" class="cap">Add a price CSV (Date, Adj Close) and a P/E CSV (Date, PE), or one file with both. Nothing leaves your browser.</p>
     </details>
   </aside>
   <main>
@@ -34,8 +42,9 @@
     <section class="panel"><h2>P/E vs its average <small>green = invested</small></h2><div id="c-pe"></div></section>
     <section class="panel"><h2>Growth of 1 <small>net of costs, dividends reinvested</small></h2><div id="c-growth"></div></section>
     <section class="panel"><h2>Drawdown</h2><div id="c-dd"></div></section>
-    <section class="panel"><h2>Sensitivity: excess CAGR vs buy-and-hold <small>click a cell to use it</small></h2>
-      <div id="grid"></div></section>
+    <section class="panel"><h2>Sensitivity: excess CAGR vs buy-and-hold <small>tap a cell to use it</small></h2>
+      <div id="grid" class="scroll x"></div><p id="plateau" class="cap"></p></section>
+    <section class="panel"><h2>All stocks, same settings <button id="uni" class="btn small">Run</button></h2><div id="uniout"><p class="note">Runs the current settings on every stock in the list.</p></div></section>
     <section class="panel"><h2>Trades <button id="csv" class="btn small">Download CSV</button></h2><div id="trades" class="scroll"></div></section>
     <footer>Backtest on trailing P/E, in-sample. Not financial advice.</footer>
   </main>

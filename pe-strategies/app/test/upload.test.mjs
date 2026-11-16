@@ -46,3 +46,8 @@ test('names are made safe for URLs and labels', () => {
   assert.equal(cleanName('aapl <b>'), 'AAPLB')
   assert.equal(cleanName('###'), 'CUSTOM')
 })
+
+test('minute-bar sized files are refused instead of freezing the page', () => {
+  const rows = Array.from({ length: 20001 }, (_, i) => `${new Date(Date.UTC(1900, 0, 1 + i)).toISOString().slice(0, 10)},${10 + (i % 7)},${15 + (i % 3)}`)
+  assert.throws(() => mergeUpload([parseCsv(`Date,Close,PE\n${rows.join('\n')}`)]), /20,000 rows/)
+})

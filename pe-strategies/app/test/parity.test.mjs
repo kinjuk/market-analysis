@@ -2,7 +2,7 @@
 import assert from 'node:assert/strict'
 import fs from 'node:fs'
 import test from 'node:test'
-import { parseSeries, rollingAvg, run, sensitivity, stateMachine, stats } from '../engine.js'
+import { halves, parseSeries, rollingAvg, run, sensitivity, stateMachine, stats, tradeStats, universe } from '../engine.js'
 
 const fx = JSON.parse(fs.readFileSync(new URL('./fixtures.json', import.meta.url), 'utf8'))
 const stock = parseSeries(fx.stock)
@@ -64,4 +64,32 @@ test('a later start date trims the window without changing the rules', () => {
   assert.equal(later.dates[0], from)
   assert.equal(later.dates.length, full.dates.length - 400)
   assert.match(run(stock, bench, { from: '2099-01-01' }).error, /after the last/)
+})
+
+
+test('trade stats: win rate, average trade and the best trade share of gains', () => {
+  const s = tradeStats([{ ret: 0.3 }, { ret: 0.1 }, { ret: -0.2 }, { ret: 0.1 }])
+  assert.equal(s.winRate, 0.75)
+  close(s.avgTrade, 0.075)
+  close(s.bestShare, 0.3 / 0.5)
+  assert.equal(tradeStats([]).n, 0)
+})
+
+test('halves split the window and need a minimum length', () => {
+  const r = run(stock, bench, {})
+  const h = halves(r)
+  assert.ok(h.first.strategy.cagr !== h.second.strategy.cagr)
+  assert.equal(halves({ strat: new Float64Array(50) }), null)
+})
+
+test('universe runs the same settings on every stock and reports the median', () => {
+  const u = universe({ A: stock, B: stock, C: { ...stock, pe: stock.pe.map(() => NaN) } }, bench, {})
+  assert.equal(u.total, 2)                       // C has no P/E history and is skipped
+  assert.equal(u.rows[0].excess, u.median)
+  assert.ok(u.ahead === 0 || u.ahead === 2)
+})
+
+test('a start date too close to the end gives an error, not NaN statistics', () => {
+  const full = run(stock, bench, {})
+  assert.match(run(stock, bench, { from: full.dates.at(-10) }).error, /Fewer than 30/)
 })

@@ -39,3 +39,17 @@ export function heatColor(excess) {
   const a = Math.round(Math.min(1, Math.abs(excess) / 0.05) * 55)
   return `color-mix(in srgb, var(${excess >= 0 ? '--good' : '--bad'}) ${a}%, transparent)`
 }
+
+export const plural = (n, word) => `${n} ${word}${n === 1 ? '' : 's'}`
+
+/** How many of a grid cell's neighbours (up to 8) beat buy-and-hold: a broad plateau is a better sign than one lucky cell. */
+export function plateau(grid, i, j) {
+  let n = 0
+  let ahead = 0
+  for (let di = -1; di <= 1; di++) for (let dj = -1; dj <= 1; dj++) {
+    if (!di && !dj) continue
+    const c = grid[i + di]?.[j + dj]
+    if (c) { n++; if (c.excessCagr > 0) ahead++ }
+  }
+  return { n, ahead }
+}

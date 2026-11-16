@@ -120,6 +120,7 @@ export function run(stock, bench, params = {}) {
   const from = P.from ? stock.dates.findIndex((d) => d >= P.from) : 0
   if (from < 0) return { error: 'The start date is after the last available date.', P }
   const start = Math.max(valid, from)
+  if (stock.dates.length - start < 30) return { error: 'Fewer than 30 trading days left after the start date.', P }
   const state = stateMachine(stock.pe, avg, P.entry, P.exitMult)
   const bt = backtest(state, stock.adj, P.delayDays, P.costBps)
   const dates = stock.dates.slice(start)
@@ -147,4 +148,41 @@ export function sensitivity(stock, bench, params, entries, exits) {
       return { cagr: r.stats.strategy.cagr, sharpe: r.stats.strategy.sharpe, excessCagr: r.stats.strategy.cagr - r.stats.hold.cagr, trades: r.trades.length }
     }),
   )
+}
+
+/** Win rate, average trade, and how much of the total gain the single best trade carries. */
+export function tradeStats(trades) {
+  const n = trades.length
+  if (!n) return { n: 0, winRate: NaN, avgTrade: NaN, bestShare: NaN }
+  const wins = trades.filter((t) => t.ret > 0)
+  const gain = wins.reduce((a, t) => a + t.ret, 0)
+  return {
+    n, winRate: wins.length / n, avgTrade: trades.reduce((a, t) => a + t.ret, 0) / n,
+    bestShare: gain > 0 ? Math.max(...wins.map((t) => t.ret)) / gain : NaN,
+  }
+}
+
+/** Same stats on each half of the window. A consistency check, not a validation: the settings were tuned on the whole window. */
+export function halves(res) {
+  const n = res.strat.length
+  if (n < 120) return null
+  const m = Math.floor(n / 2)
+  const part = (a, b) => ({ strategy: stats(res.strat.slice(a, b)), hold: stats(res.hold.slice(a, b)) })
+  return { first: part(0, m), second: part(m, n) }
+}
+
+/** The same settings on every stock. One stock with a handful of trades proves little; the whole list says more. */
+export function universe(stocks, bench, params) {
+  const rows = []
+  for (const [ticker, stock] of Object.entries(stocks)) {
+    const r = run(stock, bench, params)
+    if (r.error) continue
+    rows.push({ ticker, excess: r.stats.strategy.cagr - r.stats.hold.cagr, sharpeDelta: r.stats.strategy.sharpe - r.stats.hold.sharpe,
+      cagr: r.stats.strategy.cagr, trades: r.trades.length, maxDD: r.stats.strategy.maxDD })
+  }
+  rows.sort((a, b) => b.excess - a.excess)
+  const ex = rows.map((r) => r.excess).sort((a, b) => a - b)
+  const mid = ex.length >> 1
+  const median = ex.length ? (ex.length % 2 ? ex[mid] : (ex[mid - 1] + ex[mid]) / 2) : NaN
+  return { rows, ahead: rows.filter((r) => r.excess > 0).length, total: rows.length, median }
 }

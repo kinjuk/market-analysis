@@ -1,36 +1,35 @@
 # P/E mean reversion
-Long when P/E **crosses below** its N-year average; exit when it reaches **1.2×** that average; cash in between.
 
-## Web page (GitHub Pages)
-`app/index.html`: pick a stock, SPY or QQQ as benchmark, and tweak the average window, entry, exit, costs, delay and start date. Shows P/E vs its average, growth of 1, drawdown, an entry × exit sensitivity grid, the trade list (CSV export), and a shareable link that stores your settings. It runs entirely in the browser on `app/engine.js`, which is tested against the Python engine (`app/test/`). Data comes from `app/data/*.json` (built weekly by the "Build site data" workflow from `universe.txt`); without data it shows clearly labelled demo data.
+One idea, tested a few ways: buy a stock when its P/E drops below its own 5-year average, sell when the P/E climbs to 1.2 times that average, and sit in cash in between. Every number in that sentence can be changed.
 
-## Two modes, two different series
-| | Series | Source | History |
-|---|---|---|---|
-| **Backtest** | trailing P/E | `trailing_pe.py` (SEC EDGAR EPS, point-in-time, split-adjusted) or your own `date,pe` CSV | available now |
-| **Live signal** | forward P/E | `log_pe.py` (daily GitHub Action → `data/forward_pe.csv`) | accrues from day one; 5y average needs ~4.5y |
+**Try it:** `app/index.html` (GitHub Pages) runs the test in the browser. Pick a stock, move the sliders, and compare the result with buy-and-hold and with SPY or QQQ. You can also upload your own CSVs.
 
-A backtest on trailing P/E does **not** validate the forward-P/E signal; it tests the idea on a related series. Say so wherever you show results.
+## What's here
+- `app/`: the web page. `engine.js` does the maths and is checked against the Python version on every push.
+- `strategy.py`, `report.py`, `pe-reversion.ipynb`: the same test in Python.
+- `trailing_pe.py` and `build_data.py`: build the P/E history (from SEC filings, or Yahoo when no SEC contact is set) and the JSON files the page reads. A weekly Action refreshes them.
+- `log_pe.py`: saves each stock's forward P/E every weekday. A 5-year average needs about four and a half years of those, so it isn't usable yet.
 
-## Visualize a test
-`pe-reversion.ipynb` (or `python report.py --ticker AAPL --benchmark SPY`) plots P/E vs its average, growth of 1 against buy-and-hold and SPY/QQQ, drawdowns and a stats table, using the standard parameters in `strategy.md`.
-Install: `pip install -r requirements-dev.txt jupyter`.
+## Two P/E series, on purpose
+Backtests run on trailing P/E because it has history. The forward P/E being logged is what a live signal would use, and it's too short to test. A good result on one tells you little about the other.
 
-## Use
+## Run it
     pip install -r requirements-dev.txt && pytest -q
-    # backtest (single stock)
+    node --test app/test/parity.test.mjs app/test/ui-state.test.mjs app/test/upload.test.mjs   # after: python app/test/make_fixtures.py
+
     SEC_USER_AGENT="Your Name you@email.com" python trailing_pe.py --ticker AAPL --years 12
     python strategy.py --source trailing --ticker AAPL
-    # index/ETF (no EPS on EDGAR): supply a monthly/daily date,pe CSV, e.g. S&P 500 P/E copied from multpl.com
-    python strategy.py --source csv --pe-csv spy_pe.csv --ticker SPY
-    # live
-    python log_pe.py
-    python strategy.py --source forward --ticker MSFT
+    python report.py --ticker AAPL --benchmark SPY
+    python strategy.py --source csv --pe-csv spy_pe.csv --ticker SPY    # ETFs have no EPS, so bring your own P/E series
+    python log_pe.py                                                    # the daily forward P/E logger
 
-## Caveats
-- EPS ≤ 0 gives no P/E and forces the signal flat. Cyclicals invert the signal (low P/E at peak earnings).
-- Q4 EPS is derived (annual minus three quarters); share-count changes make it approximate.
-- Fixed ticker choice today = survivorship bias. Dividends are included in strategy returns (adjusted prices), not in P/E.
-- Yahoo's forward EPS follows a fiscal-year horizon, so the live series can jump. EPS and price are logged to rebuild a constant horizon later.
-- ETFs often have no forward P/E on Yahoo. GitHub disables scheduled runs after 60 days without repo activity: check the Actions tab.
-- Few trades means anecdote: under 5 trades the CLI warns you.
+`pip install jupyter` if you want the notebook.
+
+## What can mislead you
+- Zero or negative earnings give no P/E, and the strategy goes to cash. Cyclicals flip the signal, since their P/E is lowest when earnings peak.
+- Q4 earnings are worked out as the year minus three quarters, so share-count changes make them a little off.
+- The stock list was picked today, which favours companies that survived.
+- Yahoo's forward EPS follows the fiscal year, so the live series can jump when the year rolls over.
+- Yahoo often has no forward P/E for ETFs.
+- GitHub stops scheduled workflows after 60 days without repo activity. Check the Actions tab now and then.
+- Few trades means an anecdote. The Python report warns under 5; the page shows the count and has an all-stocks table.
