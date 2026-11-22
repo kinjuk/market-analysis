@@ -1,236 +1,236 @@
 {
- "built": "2026-11-15",
+ "built": "2026-11-22",
  "tickers": [
   {
    "ticker": "AAPL",
    "eps_source": "yahoo",
-   "first_pe": "2010-11-15",
-   "last_pe": "2026-11-13",
-   "last_date": "2026-11-13",
+   "first_pe": "2010-11-22",
+   "last_pe": "2026-11-20",
+   "last_date": "2026-11-20",
    "days": 4024
   },
   {
    "ticker": "MSFT",
    "eps_source": "yahoo",
-   "first_pe": "2010-11-15",
-   "last_pe": "2026-11-13",
-   "last_date": "2026-11-13",
+   "first_pe": "2010-11-22",
+   "last_pe": "2026-11-20",
+   "last_date": "2026-11-20",
    "days": 4024
   },
   {
    "ticker": "TXN",
    "eps_source": "yahoo",
-   "first_pe": "2010-11-15",
-   "last_pe": "2026-11-13",
-   "last_date": "2026-11-13",
+   "first_pe": "2010-11-22",
+   "last_pe": "2026-11-20",
+   "last_date": "2026-11-20",
    "days": 4024
   },
   {
    "ticker": "IBM",
    "eps_source": "yahoo",
-   "first_pe": "2010-11-15",
-   "last_pe": "2026-11-13",
-   "last_date": "2026-11-13",
+   "first_pe": "2010-11-22",
+   "last_pe": "2026-11-20",
+   "last_date": "2026-11-20",
    "days": 4024
   },
   {
    "ticker": "CSCO",
    "eps_source": "yahoo",
-   "first_pe": "2010-11-15",
-   "last_pe": "2026-11-13",
-   "last_date": "2026-11-13",
+   "first_pe": "2010-11-22",
+   "last_pe": "2026-11-20",
+   "last_date": "2026-11-20",
    "days": 4024
   },
   {
    "ticker": "QCOM",
    "eps_source": "yahoo",
-   "first_pe": "2010-11-15",
-   "last_pe": "2026-11-13",
-   "last_date": "2026-11-13",
+   "first_pe": "2010-11-22",
+   "last_pe": "2026-11-20",
+   "last_date": "2026-11-20",
    "days": 4024
   },
   {
    "ticker": "AVGO",
    "eps_source": "yahoo",
-   "first_pe": "2010-11-15",
-   "last_pe": "2026-11-13",
-   "last_date": "2026-11-13",
+   "first_pe": "2010-11-22",
+   "last_pe": "2026-11-20",
+   "last_date": "2026-11-20",
    "days": 4024
   },
   {
    "ticker": "ADI",
    "eps_source": "yahoo",
-   "first_pe": "2010-11-15",
-   "last_pe": "2026-11-13",
-   "last_date": "2026-11-13",
+   "first_pe": "2010-11-22",
+   "last_pe": "2026-11-20",
+   "last_date": "2026-11-20",
    "days": 4024
   },
   {
    "ticker": "PG",
    "eps_source": "yahoo",
-   "first_pe": "2010-11-15",
-   "last_pe": "2026-11-13",
-   "last_date": "2026-11-13",
+   "first_pe": "2010-11-22",
+   "last_pe": "2026-11-20",
+   "last_date": "2026-11-20",
    "days": 4024
   },
   {
    "ticker": "KO",
    "eps_source": "yahoo",
-   "first_pe": "2010-11-15",
-   "last_pe": "2026-11-13",
-   "last_date": "2026-11-13",
+   "first_pe": "2010-11-22",
+   "last_pe": "2026-11-20",
+   "last_date": "2026-11-20",
    "days": 4024
   },
   {
    "ticker": "PEP",
    "eps_source": "yahoo",
-   "first_pe": "2010-11-15",
-   "last_pe": "2026-11-13",
-   "last_date": "2026-11-13",
+   "first_pe": "2010-11-22",
+   "last_pe": "2026-11-20",
+   "last_date": "2026-11-20",
    "days": 4024
   },
   {
    "ticker": "WMT",
    "eps_source": "yahoo",
-   "first_pe": "2010-11-15",
-   "last_pe": "2026-11-13",
-   "last_date": "2026-11-13",
+   "first_pe": "2010-11-22",
+   "last_pe": "2026-11-20",
+   "last_date": "2026-11-20",
    "days": 4024
   },
   {
    "ticker": "COST",
    "eps_source": "yahoo",
-   "first_pe": "2010-11-15",
-   "last_pe": "2026-11-13",
-   "last_date": "2026-11-13",
+   "first_pe": "2010-11-22",
+   "last_pe": "2026-11-20",
+   "last_date": "2026-11-20",
    "days": 4024
   },
   {
    "ticker": "HD",
    "eps_source": "yahoo",
-   "first_pe": "2010-11-15",
-   "last_pe": "2026-11-13",
-   "last_date": "2026-11-13",
+   "first_pe": "2010-11-22",
+   "last_pe": "2026-11-20",
+   "last_date": "2026-11-20",
    "days": 4024
   },
   {
    "ticker": "MCD",
    "eps_source": "yahoo",
-   "first_pe": "2010-11-15",
-   "last_pe": "2026-11-13",
-   "last_date": "2026-11-13",
+   "first_pe": "2010-11-22",
+   "last_pe": "2026-11-20",
+   "last_date": "2026-11-20",
    "days": 4024
   },
   {
    "ticker": "NKE",
    "eps_source": "yahoo",
-   "first_pe": "2010-11-15",
-   "last_pe": "2026-11-13",
-   "last_date": "2026-11-13",
+   "first_pe": "2010-11-22",
+   "last_pe": "2026-11-20",
+   "last_date": "2026-11-20",
    "days": 4024
   },
   {
    "ticker": "QSR",
    "eps_source": "yahoo",
    "first_pe": "2015-10-27",
-   "last_pe": "2026-11-13",
-   "last_date": "2026-11-13",
-   "days": 2999
+   "last_pe": "2026-11-20",
+   "last_date": "2026-11-20",
+   "days": 3004
   },
   {
    "ticker": "JNJ",
    "eps_source": "yahoo",
-   "first_pe": "2010-11-15",
-   "last_pe": "2026-11-13",
-   "last_date": "2026-11-13",
+   "first_pe": "2010-11-22",
+   "last_pe": "2026-11-20",
+   "last_date": "2026-11-20",
    "days": 4024
   },
   {
    "ticker": "UNH",
    "eps_source": "yahoo",
-   "first_pe": "2010-11-15",
-   "last_pe": "2026-11-13",
-   "last_date": "2026-11-13",
+   "first_pe": "2010-11-22",
+   "last_pe": "2026-11-20",
+   "last_date": "2026-11-20",
    "days": 4024
   },
   {
    "ticker": "ABT",
    "eps_source": "yahoo",
-   "first_pe": "2010-11-15",
-   "last_pe": "2026-11-13",
-   "last_date": "2026-11-13",
+   "first_pe": "2010-11-22",
+   "last_pe": "2026-11-20",
+   "last_date": "2026-11-20",
    "days": 4024
   },
   {
    "ticker": "JPM",
    "eps_source": "yahoo",
-   "first_pe": "2010-11-15",
-   "last_pe": "2026-11-13",
-   "last_date": "2026-11-13",
+   "first_pe": "2010-11-22",
+   "last_pe": "2026-11-20",
+   "last_date": "2026-11-20",
    "days": 4024
   },
   {
    "ticker": "V",
    "eps_source": "yahoo",
-   "first_pe": "2010-11-15",
-   "last_pe": "2026-11-13",
-   "last_date": "2026-11-13",
+   "first_pe": "2010-11-22",
+   "last_pe": "2026-11-20",
+   "last_date": "2026-11-20",
    "days": 4024
   },
   {
    "ticker": "MA",
    "eps_source": "yahoo",
-   "first_pe": "2010-11-15",
-   "last_pe": "2026-11-13",
-   "last_date": "2026-11-13",
+   "first_pe": "2010-11-22",
+   "last_pe": "2026-11-20",
+   "last_date": "2026-11-20",
    "days": 4024
   },
   {
    "ticker": "BNP.PA",
    "eps_source": "yahoo",
-   "first_pe": "2010-11-15",
-   "last_pe": "2026-11-13",
-   "last_date": "2026-11-13",
+   "first_pe": "2010-11-22",
+   "last_pe": "2026-11-20",
+   "last_date": "2026-11-20",
    "days": 4094
   },
   {
    "ticker": "MAIN",
    "eps_source": "yahoo",
-   "first_pe": "2010-11-15",
-   "last_pe": "2026-11-13",
-   "last_date": "2026-11-13",
+   "first_pe": "2010-11-22",
+   "last_pe": "2026-11-20",
+   "last_date": "2026-11-20",
    "days": 4024
   },
   {
    "ticker": "XOM",
    "eps_source": "yahoo",
-   "first_pe": "2010-11-15",
-   "last_pe": "2026-11-13",
-   "last_date": "2026-11-13",
+   "first_pe": "2010-11-22",
+   "last_pe": "2026-11-20",
+   "last_date": "2026-11-20",
    "days": 4024
   },
   {
    "ticker": "CEG",
    "eps_source": "yahoo",
    "first_pe": "2022-11-08",
-   "last_pe": "2026-11-13",
-   "last_date": "2026-11-13",
-   "days": 1211
+   "last_pe": "2026-11-20",
+   "last_date": "2026-11-20",
+   "days": 1216
   },
   {
    "ticker": "BE",
    "eps_source": "yahoo",
    "first_pe": "2023-11-08",
-   "last_pe": "2026-11-13",
-   "last_date": "2026-11-13",
-   "days": 2089
+   "last_pe": "2026-11-20",
+   "last_date": "2026-11-20",
+   "days": 2094
   },
   {
    "ticker": "SPY",
    "eps_source": "shiller-proxy",
-   "first_pe": "2010-11-15",
+   "first_pe": "2010-11-22",
    "last_pe": "2023-11-03",
-   "last_date": "2026-11-13",
+   "last_date": "2026-11-20",
    "days": 4024
   },
   {
@@ -238,7 +238,7 @@
    "eps_source": "none",
    "first_pe": null,
    "last_pe": null,
-   "last_date": "2026-11-13",
+   "last_date": "2026-11-20",
    "days": 4024
   }
  ]
