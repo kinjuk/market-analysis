@@ -93,3 +93,13 @@ test('a start date too close to the end gives an error, not NaN statistics', () 
   const full = run(stock, bench, {})
   assert.match(run(stock, bench, { from: full.dates.at(-10) }).error, /Fewer than 30/)
 })
+
+test('cached rolling averages give identical universe and sensitivity results', () => {
+  const avg = rollingAvg(stock.days, stock.pe, 5)
+  const a = universe({ A: stock, B: stock }, bench, {})
+  const b = universe({ A: stock, B: stock }, bench, {}, () => avg)
+  assert.deepEqual(b.rows, a.rows)
+  const g1 = sensitivity(stock, bench, { lookbackYears: 5 }, [0.95, 1.0], [1.1, 1.2])
+  const g2 = sensitivity(stock, bench, { lookbackYears: 5, avg }, [0.95, 1.0], [1.1, 1.2])
+  assert.deepEqual(g2, g1)
+})

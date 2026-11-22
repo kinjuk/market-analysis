@@ -1,55 +1,51 @@
 <!doctype html>
 <html lang="en" data-theme="light">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="color-scheme" content="light dark">
-  <meta name="theme-color" content="#ffffff">
-  <title>P/E mean reversion · market-analysis</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/uplot@1.6.31/dist/uPlot.min.css">
-  <link rel="stylesheet" href="style.css">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<title>P/E mean reversion · market-analysis</title>
+<script>try{document.documentElement.dataset.theme=localStorage.getItem('pe-theme')||(matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light')}catch(e){}</script>
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
-<div class="app">
-  <aside>
-    <h1>P/E mean reversion</h1>
-    <p class="sub">Long below the P/E average, out at a multiple of it.</p>
-    <div class="controls">
-      <div class="f wide"><label for="ticker">Stock</label><select id="ticker"></select><p id="src" class="cap"></p></div>
-      <div class="f"><label for="bench">Benchmark</label><select id="bench"></select></div>
-      <div class="f"><label for="from">Start date</label><input id="from" type="date"></div>
-      <div class="f"><label for="lookbackYears">P/E average <output id="o-lookbackYears"></output></label><input id="lookbackYears" type="range" min="1" max="10" step="0.5"></div>
-      <div class="f"><label for="entry">Enter below <output id="o-entry"></output>×</label><input id="entry" type="range" min="0.8" max="1.1" step="0.01"></div>
-      <div class="f"><label for="exitMult">Exit at <output id="o-exitMult"></output>×</label><input id="exitMult" type="range" min="1.02" max="1.5" step="0.01"></div>
-    </div>
-    <details class="adv"><summary>Costs and fills</summary>
-      <div class="controls">
-        <div class="f"><label for="costBps">Cost per side <output id="o-costBps"></output> bps</label><input id="costBps" type="range" min="0" max="50" step="1"></div>
-        <div class="f"><label for="delayDays">Fill delay <output id="o-delayDays"></output> close(s)</label><input id="delayDays" type="range" min="0" max="5" step="1"></div>
-      </div>
-    </details>
-    <div class="row"><button id="reset" class="btn">Standard test</button><button id="share" class="btn">Copy link</button><button id="theme" class="btn">Dark mode</button></div>
-    <details class="up"><summary>Add your own data</summary>
-      <input id="files" type="file" accept=".csv,text/csv" multiple>
-      <input id="upname" type="text" placeholder="Name, e.g. AAPL" maxlength="12" autocapitalize="characters" autocorrect="off" spellcheck="false" enterkeyhint="done">
-      <div class="row"><button id="upadd" class="btn">Add</button><button id="upclear" class="btn">Clear</button></div>
-      <p id="upmsg" class="cap">Add a price CSV (Date, Adj Close) and a P/E CSV (Date, PE), or one file with both. Nothing leaves your browser.</p>
-    </details>
-  </aside>
-  <main>
-    <div id="banners" aria-live="polite"></div>
-    <section id="stats"></section>
-    <section class="panel"><h2>P/E vs its average <small>green = invested</small></h2><div id="c-pe"></div></section>
-    <section class="panel"><h2>Growth of 1 <small>net of costs, dividends reinvested</small></h2><div id="c-growth"></div></section>
-    <section class="panel"><h2>Drawdown</h2><div id="c-dd"></div></section>
-    <section class="panel"><h2>Sensitivity: excess CAGR vs buy-and-hold <small>tap a cell to use it</small></h2>
-      <div id="grid" class="scroll x"></div><p id="plateau" class="cap"></p></section>
-    <section class="panel"><h2>All stocks, same settings <button id="uni" class="btn small">Run</button></h2><div id="uniout"><p class="note">Runs the current settings on every stock in the list.</p></div></section>
-    <section class="panel"><h2>Trades <button id="csv" class="btn small">Download CSV</button></h2><div id="trades" class="scroll"></div></section>
-    <footer>Backtest on trailing P/E, in-sample. Not financial advice.</footer>
+<div class="wrap">
+  <header>
+    <div><h1>P/E mean reversion</h1><p class="sub">Buy when a stock is cheap against its own history, step aside when it stretches.</p></div>
+    <div class="ctl"><select id="t" aria-label="Stock"></select><select id="b" aria-label="Benchmark"></select><input id="from" type="date" aria-label="Start date"><button class="pill" id="reset">Standard test</button><button class="pill" id="share">Copy link</button><button class="pill" id="theme">Dark mode</button></div>
+  </header>
+  <p id="src"></p>
+  <p class="note" id="msg" style="margin:0 0 12px"></p>
+  <main class="grid" id="app">
+    <section class="c rules"><div class="lab"><span class="l">Your rules</span></div><div class="sls">
+      <div class="sl"><label for="W">P/E average <output id="Wo"></output></label><input id="W" type="range" min="1" max="10" step="0.5"></div>
+      <div class="sl"><label for="en">Buy below <output id="eno"></output></label><input id="en" type="range" min="0.8" max="1.1" step="0.01"></div>
+      <div class="sl"><label for="ex">Sell at <output id="exo"></output></label><input id="ex" type="range" min="1.02" max="1.5" step="0.01"></div>
+      <div class="sl"><label for="cost">Cost per side <output id="costo"></output></label><input id="cost" type="range" min="0" max="50" step="1"></div>
+      <div class="sl"><label for="delay">Fill delay <output id="delayo"></output></label><input id="delay" type="range" min="0" max="5" step="1"></div></div></section>
+    <section class="c hero"><div class="lab"><span class="l">Against holding the stock</span></div>
+      <div class="big"><span id="big">–</span><small>a year</small></div><p class="cap" id="sent"></p>
+      <svg class="spark" viewBox="0 0 300 100" preserveAspectRatio="none" aria-hidden="true"><path id="pbo" stroke="var(--b-edge)" style="stroke-width:4.4"/><path id="pb" stroke="var(--b-fill)"/><path id="ph" stroke="var(--ink)"/><path id="ps" stroke="var(--hi)"/></svg>
+      <div class="legend"><span><b style="background:var(--hi)"></b>Strategy <span id="ls"></span></span><span><b style="background:var(--ink)"></b>Holding <span id="lh"></span></span><span><b style="background:var(--b-fill);box-shadow:inset 0 0 0 1.5px var(--b-edge)"></b><span id="bn"></span> <span id="lb"></span></span></div></section>
+    <section class="c half time"><div class="lab"><span class="l">Time invested</span></div><div class="big" id="tv">–</div><div class="bar"><i id="tb"></i></div><p class="cap">In cash the rest of the time.</p></section>
+    <section class="c half drop"><div class="lab"><span class="l">Worst drop</span></div><div class="row"><span>Strategy</span><div class="bar"><i id="d1"></i></div><span id="v1"></span></div><div class="row h"><span>Holding</span><div class="bar"><i id="d2"></i></div><span id="v2"></span></div><p class="cap">Shorter bars are calmer.</p></section>
+    <section class="c ring"><div class="lab"><span class="l">Stocks ahead</span></div><div class="ringrow"><div class="rg"><svg viewBox="0 0 100 100"><circle class="tr" cx="50" cy="50" r="42"/><circle class="pr" id="rp" cx="50" cy="50" r="42"/></svg><div><div class="rgv" id="rv">–</div><p class="cap">beat holding with these rules</p></div></div><div class="strip" id="strip"></div></div></section>
+    <section class="c sig"><div class="lab"><span class="l">Right now</span></div><div class="rgv" id="sv" style="font-size:1.6rem">–</div><div class="meter"><div class="zone" id="zn"></div><div class="mk" id="mx"></div><div class="dot" id="dt"></div></div><div class="ticks"><span>cheaper</span><span>average</span><span>stretched</span></div><p class="cap" id="sc"></p></section>
+    <section class="c trd"><div class="lab"><span class="l">Trades</span></div><div class="big"><span id="tn">–</span><small id="tw"></small></div><div class="dots" id="td"></div><div class="chips" id="tchips"></div></section>
+    <section class="c rob"><div class="lab"><span class="l">Nearby settings</span></div><div class="robrow"><div class="nb" id="nb"></div><p class="cap" id="nc"></p></div></section>
+    <section class="c cons"><div class="lab"><span class="l">Consistency</span></div><div class="cgrid"><div class="mini"><span>1st half</span><div class="bar"><i id="h1"></i></div><span id="h1v"></span></div><div class="mini"><span>2nd half</span><div class="bar"><i id="h2"></i></div><span id="h2v"></span></div><div class="mini"><span>Whole window</span><div class="bar"><i id="h3"></i></div><span id="h3v"></span></div></div><p class="cap">Sharpe ratio of the strategy in each half of the window, and overall. Similar bars mean steadier results.</p></section>
+    <section class="c pe chart"><div class="lab"><span class="l">P/E vs its average <small class="cap">orange = invested</small></span><span class="ro" id="ro-pe"></span></div><div id="c-pe"></div></section>
+    <section class="c gro chart"><div class="lab"><span class="l">Growth of 1 <small class="cap">net of costs</small></span><span class="ro" id="ro-gro"></span></div><div id="c-gro"></div></section>
+    <section class="c dd chart"><div class="lab"><span class="l">Drawdown</span><span class="ro" id="ro-dd"></span></div><div id="c-dd"></div></section>
+    <section class="c score"><div class="lab"><span class="l">Scorecard</span></div><div class="xs"><table class="tb" id="score"></table></div></section>
+    <section class="c sens"><div class="lab"><span class="l">Sensitivity: excess CAGR vs holding</span></div><div class="xs"><div class="sg" id="sg"></div></div><p class="cap" id="plat"></p></section>
+    <section class="c uni"><div class="lab"><span class="l">All stocks, same rules</span></div><p class="cap" id="uns"></p><div class="scr"><table class="tb" id="un"></table></div></section>
+    <section class="c trades"><div class="lab"><span class="l">Trade list</span><button class="link" id="csv">Download CSV</button></div><div class="scr"><table class="tb" id="trt"></table></div></section>
+    <section class="c up"><div class="lab"><span class="l">Add your own data</span></div><div class="upr"><input id="files" type="file" accept=".csv,text/csv" multiple><input id="upname" type="text" placeholder="Name, e.g. AAPL" maxlength="12"><button class="pill pri" id="upadd">Add</button><button class="pill" id="upclear">Clear</button></div><p class="cap" id="upmsg">A price CSV (Date, Adj Close) and a P/E CSV (Date, PE), or one file with both. Saved in this browser only.</p></section>
   </main>
+  <p class="note">Backtest on trailing P/E, in-sample. Not financial advice.</p>
 </div>
-<script src="https://cdn.jsdelivr.net/npm/uplot@1.6.31/dist/uPlot.iife.min.js"></script>
+
 <script type="module" src="app.js"></script>
 </body>
 </html>

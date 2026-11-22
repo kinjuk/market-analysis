@@ -139,7 +139,7 @@ export function run(stock, bench, params = {}) {
 /** Entry x exit grid: does the idea survive nearby settings, or is one cell a lucky pick? */
 export function sensitivity(stock, bench, params, entries, exits) {
   const P = { ...STANDARD, ...params }
-  const avg = rollingAvg(stock.days, stock.pe, P.lookbackYears, P.minCoverage)
+  const avg = params.avg ?? rollingAvg(stock.days, stock.pe, P.lookbackYears, P.minCoverage)
   return entries.map((entry) =>
     exits.map((exitMult) => {
       if (exitMult <= entry) return null
@@ -171,11 +171,11 @@ export function halves(res) {
   return { first: part(0, m), second: part(m, n) }
 }
 
-/** The same settings on every stock. One stock with a handful of trades proves little; the whole list says more. */
-export function universe(stocks, bench, params) {
+/** The same settings on every stock. One stock with a handful of trades proves little; the whole list says more. `avgOf` optionally supplies cached rolling averages. */
+export function universe(stocks, bench, params, avgOf) {
   const rows = []
   for (const [ticker, stock] of Object.entries(stocks)) {
-    const r = run(stock, bench, params)
+    const r = run(stock, bench, avgOf ? { ...params, avg: avgOf(ticker, stock) } : params)
     if (r.error) continue
     rows.push({ ticker, excess: r.stats.strategy.cagr - r.stats.hold.cagr, sharpeDelta: r.stats.strategy.sharpe - r.stats.hold.sharpe,
       cagr: r.stats.strategy.cagr, trades: r.trades.length, maxDD: r.stats.strategy.maxDD })
