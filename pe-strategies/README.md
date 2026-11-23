@@ -2,7 +2,7 @@
 
 One idea, tested a few ways: buy a stock when its P/E drops below its own 5-year average, sell when the P/E climbs to 1.2 times that average, and sit in cash in between. Every number in that sentence can be changed.
 
-**Try it:** `app/index.html` (GitHub Pages) runs the test in the browser. Pick a stock, move the sliders, and compare the result with buy-and-hold and with SPY or QQQ. You can also upload your own CSVs.
+**Try it:** `app/index.html` (GitHub Pages Preview: https://kinjuk.github.io/market-analysis/pe-strategies/app/#t=QCOM&b=QQQ&f=2015-05-23&lb=2.5&ex=1.5&c=1) runs the test in the browser. Pick a stock, move the sliders, and compare the result with buy-and-hold and with SPY or QQQ. You can also upload your own CSVs.
 
 ## What's here
 - `app/`: the web page. `engine.js` does the maths and is checked against the Python version on every push.
